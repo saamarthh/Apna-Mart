@@ -56,43 +56,17 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Update a grocery item in Firestore
-  Future<void> updateProductQuantity(String id, int newQuantity) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(id)
-          .update({'quantity': newQuantity});
-      notifyListeners();
-    } catch (error) {
-      print(error);
-    }
-  }
-
-  // Delete a grocery item from Firestore
-  Future<void> deleteProduct(String id) async {
-    try {
-      await FirebaseFirestore.instance.collection('orders').doc(id).delete();
-      notifyListeners();
-    } catch (error) {
-      print(error);
-    }
-  }
-
-  Future<void> totalPrice() async{
+  Future<void> totalPrice() async {
     try {
       double orderPrice = 0;
-      var snapshot =
-          await FirebaseFirestore.instance.collection('orders').get();
-      snapshot.docs.forEach((doc) {
-        orderPrice+=doc['price']*doc['quantity'];
+      _cartProducts.forEach((item) {
+        orderPrice += (item.price * item.quantity);
       });
       totalCost = orderPrice;
       notifyListeners();
     } catch (error) {
       print(error);
     }
-
   }
 
   Future<void> fetchCart() async {
@@ -116,5 +90,20 @@ class ProductProvider with ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+
+  void increaseQuantity(int index) {
+    _cartProducts[index].quantity += 1;
+    notifyListeners();
+  }
+
+  void decreaseQuantity(int index) {
+    _cartProducts[index].quantity = _cartProducts[index].quantity <= 0
+        ? 0
+        : _cartProducts[index].quantity - 1;
+    if (_cartProducts[index].quantity == 0) {
+      _cartProducts.removeAt(index);
+    }
+    notifyListeners();
   }
 }

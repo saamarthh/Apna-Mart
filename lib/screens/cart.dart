@@ -24,7 +24,6 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<ProductProvider>(context);
-    // controller.fetchCart();
     controller.totalPrice();
     double totalCost = controller.totalCost;
     return Scaffold(
@@ -54,32 +53,16 @@ class _CartPageState extends State<CartPage> {
                       itemCount: controller.cartProducts.length,
                       itemBuilder: (context, index) {
                         return CartTile(
-                          product: controller.cartProducts[index],
-                          onpressed: () {
-                            controller.deleteProduct(
-                                controller.cartProducts[index].id);
-                          },
-                          increaseCount: () {
-                            int productCount =
-                                controller.cartProducts[index].quantity + 1;
-                            controller.updateProductQuantity(
-                                controller.cartProducts[index].id,
-                                productCount);
-                          },
-                          decreaseCount: () {
-                            int productCount =
-                                controller.cartProducts[index].quantity <= 0
-                                    ? 0
-                                    : controller.cartProducts[index].quantity -
-                                        1;
-                            productCount == 0
-                                ? controller.deleteProduct(
-                                    controller.cartProducts[index].id)
-                                : controller.updateProductQuantity(
-                                    controller.cartProducts[index].id,
-                                    productCount);
-                          },
-                        );
+                            product: controller.cartProducts[index],
+                            onpressed: () {
+                              controller.cartProducts.removeAt(index);
+                            },
+                            increaseCount: () {
+                              controller.increaseQuantity(index);
+                            },
+                            decreaseCount: () {
+                              controller.decreaseQuantity(index);
+                            });
                       },
                     ),
                   ),
@@ -138,9 +121,9 @@ class _CartPageState extends State<CartPage> {
 
 class CartTile extends StatelessWidget {
   final Product product;
-  void Function() onpressed;
-  void Function() increaseCount;
-  void Function() decreaseCount;
+  final Function() onpressed;
+  final void Function() increaseCount;
+  final void Function() decreaseCount;
   CartTile(
       {required this.product,
       required this.onpressed,
@@ -210,9 +193,9 @@ class CartTile extends StatelessWidget {
 
 class CustomText extends StatelessWidget {
   final String text;
-  double size;
-  Color color;
-  FontWeight weight;
+  final double size;
+  final Color color;
+  final FontWeight weight;
 
   CustomText(
       {required this.text,

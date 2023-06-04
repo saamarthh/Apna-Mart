@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'services.dart';
+import 'package:provider/provider.dart';
 
 Map<String, dynamic>? paymentIntent;
 
@@ -14,9 +16,10 @@ Future<void> makePayment(BuildContext context, double amount) async {
             applePay: const PaymentSheetApplePay(
               merchantCountryCode: '+91',
             ),
-            googlePay: const PaymentSheetGooglePay(currencyCode:"+91",
-                merchantCountryCode: "US", testEnv: true)));
-
+            googlePay: const PaymentSheetGooglePay(
+                currencyCode: "+91",
+                merchantCountryCode: "US",
+                testEnv: true)));
     displayPaymentSheet(context);
   } catch (e, s) {
     print('exception:$e$s');
@@ -43,6 +46,12 @@ displayPaymentSheet(BuildContext context) async {
               ));
 
       paymentIntent = null;
+
+      var controller = Provider.of<ProductProvider>(context);
+      controller.cartProducts.forEach((item) {
+        controller.addToCart(item);
+      });
+      
     }).onError((error, stackTrace) {
       print('Error is:--->$error $stackTrace');
     });

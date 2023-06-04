@@ -73,7 +73,7 @@ class _DashboardState extends State<Dashboard> {
 
 class ProductTile extends StatelessWidget {
   final Product product;
-  void Function() ontap;
+  final Function() ontap;
   ProductTile({required this.product, required this.ontap});
   @override
   Widget build(BuildContext context) {
@@ -144,9 +144,9 @@ class ProductTile extends StatelessWidget {
 
 class CustomText extends StatelessWidget {
   final String text;
-  double size;
-  Color color;
-  FontWeight weight;
+  final double size;
+  final Color color;
+  final FontWeight weight;
 
   CustomText(
       {required this.text,
