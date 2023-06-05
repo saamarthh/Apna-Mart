@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "350830037987-p1a9a9nvod5f0rja2882omi85gvan7ve.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.apna_mart",
+            "certificate_hash": "120c16fc6e3bdb5587bd902917664932bd2855b5"
+          }
+        },
+        {
           "client_id": "350830037987-20j7bkcsfgt46eqk0r8cdqhqss5eouav.apps.googleusercontent.com",
           "client_type": 3
         }

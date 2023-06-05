@@ -101,10 +101,10 @@ class _CartPageState extends State<CartPage> {
                     height: 50,
                     child: TextButton(
                       onPressed: () {
-                        makePayment(context, controller.totalCost);
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            Dashboard.routeName,
-                            (Route<dynamic> route) => false);
+                        // makePayment(context, controller.totalCost);
+                        // Navigator.of(context).pushNamedAndRemoveUntil(
+                        //     Dashboard.routeName,
+                        //     (Route<dynamic> route) => false);
                       },
                       child: Text(
                         "Proceed to Payment",

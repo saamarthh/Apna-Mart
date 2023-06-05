@@ -1,8 +1,12 @@
+import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/services.dart';
+import 'package:apna_mart/controllers/authController.dart';
+import 'package:apna_mart/controllers/user_provider.dart';
 
 var providerController;
 
@@ -24,6 +28,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context);
+    Provider.of<UserProvider>(context).fetchUser(userid!);
     controller.fetchProduct();
     providerController = controller;
     return Scaffold(
@@ -35,11 +40,16 @@ class _DashboardState extends State<Dashboard> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(
-                context, CartPage.routeName
-              );
+              Navigator.pushNamed(context, CartPage.routeName);
             },
             icon: Icon(Icons.shopping_cart),
+            color: Colors.black,
+          ),
+          IconButton(
+            onPressed: () async {
+              FirebaseAuthMethod(FirebaseAuth.instance).signOut(context);
+            },
+            icon: Icon(Icons.logout),
             color: Colors.black,
           ),
         ],
@@ -59,7 +69,10 @@ class _DashboardState extends State<Dashboard> {
                 product: controller.products[index],
                 ontap: () {
                   controller.cartProducts.add(controller.products[index]);
-                  var snackBar = SnackBar(content: Text('Added to Cart!'), duration: Duration(seconds: 1),);
+                  var snackBar = SnackBar(
+                    content: Text('Added to Cart!'),
+                    duration: Duration(seconds: 1),
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
               );

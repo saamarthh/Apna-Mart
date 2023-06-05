@@ -36,15 +36,19 @@ class Product {
 }
 
 //User Model
-class User {
+class UserModal {
   String uid;
   String name;
-  String address;
+  String address1;
+  String address2;
+  String address3;
   String phoneNumber;
 
-  User(
+  UserModal(
       {required this.name,
-      required this.address,
+      required this.address1,
+      required this.address2,
+      required this.address3,
       required this.phoneNumber,
       required this.uid});
 
@@ -52,16 +56,20 @@ class User {
     return {
       'uid': uid,
       'name': name,
-      'address': address,
+      'address1': address1,
+      'address2': address2,
+      'address3': address3,
       'phoneNumber': phoneNumber
     };
   }
 
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
+  factory UserModal.fromMap(Map<String, dynamic> map) {
+    return UserModal(
       uid: map['uid'],
       name: map['name'],
-      address: map['address'],
+      address1: map['address1'],
+      address2: map['address2'],
+      address3: map['address3'],
       phoneNumber: map['phoneNumber']
     );
   }

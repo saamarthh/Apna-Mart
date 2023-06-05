@@ -1,40 +1,55 @@
 import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/dashboard.dart';
+import 'package:apna_mart/screens/loginPage.dart';
+import 'package:apna_mart/screens/profileScreen.dart';
+import 'package:apna_mart/screens/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:apna_mart/controllers/user_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+String? userid;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey =
-      "pk_test_51MtV1fSDRmD8t0PZbFqKeEfUlqVYAtbIfUlqGJ2FazW73XJDIBfkP614XwmVWngUcez2Fa46wW8DJ7LfKVBfyVxe00YNQLtuOI";
-  // await dotenv.load(fileName: "assets/.env");
   await Firebase.initializeApp();
-
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ProductProvider(),
-      child: const MyApp(),
-    ),
-  );
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  userid = prefs.getString('uid');
+  runApp(MyApp(userid));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
 
-  // This widget is the root of your application.
+  final String? userid;
+  const MyApp(this.userid, {Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: Dashboard.routeName,
-      routes: {
-        Dashboard.routeName: (context) => Dashboard(),
-        CartPage.routeName: (context) => CartPage()
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ProductProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider())
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: userid==null?LoginPage.routeName:Dashboard.routeName,
+        routes: {
+          Dashboard.routeName: (context) => Dashboard(),
+          CartPage.routeName: (context) => CartPage(),
+          LoginPage.routeName:(context) => LoginPage(),
+          Signup.routeName: (context) => Signup(),
+          ProfileScreen.routeName:(context) => ProfileScreen()
+        },
+      ),
     );
   }
 }
