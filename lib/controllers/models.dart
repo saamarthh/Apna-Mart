@@ -65,12 +65,53 @@ class UserModal {
 
   factory UserModal.fromMap(Map<String, dynamic> map) {
     return UserModal(
-      uid: map['uid'],
-      name: map['name'],
-      address1: map['address1'],
-      address2: map['address2'],
-      address3: map['address3'],
-      phoneNumber: map['phoneNumber']
-    );
+        uid: map['uid'],
+        name: map['name'],
+        address1: map['address1'],
+        address2: map['address2'],
+        address3: map['address3'],
+        phoneNumber: map['phoneNumber']);
+  }
+}
+
+class Orders {
+  String productName;
+  String customerName;
+  String quantity;
+  double totalCost;
+  String address;
+  String phoneNumber;
+  int productCost;
+
+  Orders(
+      {required this.productName,
+      required this.customerName,
+      required this.quantity,
+      required this.productCost,
+      required this.totalCost,
+      required this.phoneNumber,
+      required this.address});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'productName': productName,
+      'customerName': customerName,
+      'productCost': productCost,
+      'quantity': quantity,
+      'totalCost': totalCost,
+      'phoneNumber': phoneNumber,
+      'address': address,
+    };
+  }
+
+  factory Orders.fromMap(Map<String, dynamic> map) {
+    return Orders(
+        productName: map['productName'],
+        customerName: map['customerName'],
+        quantity: map['quantity'],
+        totalCost: map['totalCost'],
+        address: map['address'],
+        phoneNumber: map['phoneNumber'],
+        productCost: map['productCost']);
   }
 }

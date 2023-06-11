@@ -30,7 +30,7 @@ class _SignupState extends State<Signup> {
               body: Container(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
-                  child: Column(
+                  child: ListView(
                     children: [
                       const SizedBox(height: 30),
                       const Text(
@@ -78,7 +78,7 @@ class _SignupState extends State<Signup> {
                           String userid = userProviderModel.getUserUid();
 
                           Map<String, dynamic> body = {
-                            'uid': userProviderModel.getUserUid(),
+                            'uid': userid,
                             'name': nameController.text,
                             'address1':address1Controller.text,
                             'address2':address2Controller.text,
@@ -86,12 +86,8 @@ class _SignupState extends State<Signup> {
                             'phoneNumber': userProviderModel
                                 .userCredential.user!.phoneNumber
                           };
-
                           userProviderModel.addUser(userid, body);
                           showSnackBar(context, 'User Added Successfully');
-                          SharedPreferences pref =
-                              await SharedPreferences.getInstance();
-                          pref.setString("uid", userProviderModel.getUserUid());
                           Navigator.pushReplacementNamed(
                               context, Dashboard.routeName);
                         },

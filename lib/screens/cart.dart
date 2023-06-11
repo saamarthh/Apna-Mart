@@ -1,7 +1,12 @@
+import 'package:apna_mart/controllers/orderController.dart';
+import 'package:apna_mart/screens/orderConfirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:apna_mart/main.dart';
+import 'package:apna_mart/controllers/user_provider.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -13,15 +18,25 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  void getuserid() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      userid = pref.getString('uid');
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
+    getuserid();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<ProductProvider>(context);
+    var userController = Provider.of<UserProvider>(context);
+    userController.fetchUser(userid!);
     controller.totalPrice();
     double totalCost = controller.totalCost;
     return Scaffold(
@@ -103,6 +118,10 @@ class _CartPageState extends State<CartPage> {
                         // Navigator.of(context).pushNamedAndRemoveUntil(
                         //     Dashboard.routeName,
                         //     (Route<dynamic> route) => false);
+                        OrderProvider().addOrders(userController.user,
+                            controller.cartProducts, controller.totalCost);
+                        Navigator.pushReplacementNamed(
+                            context, OrderConfirmPage.routeName);
                       },
                       child: Text(
                         "Proceed to Payment",

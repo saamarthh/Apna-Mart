@@ -1,5 +1,7 @@
 import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
+import 'package:apna_mart/utility/loading.dart';
+import 'package:apna_mart/utility/menuDrawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
@@ -7,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/controllers/authController.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 var providerController;
 
@@ -20,67 +23,76 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  void getuserid() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      userid = pref.getString('uid');
+    });
+  }
+
   @override
   void initState() {
+    getuserid();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context);
-    Provider.of<UserProvider>(context).fetchUser(userid!);
+    var userController = Provider.of<UserProvider>(context);
+    userController.fetchUser(userid!);
     controller.fetchProduct();
     providerController = controller;
-    return Scaffold(
-      appBar: AppBar(
-        leading: Icon(
-          Icons.menu,
-          color: Colors.black,
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, CartPage.routeName);
-            },
-            icon: Icon(Icons.shopping_cart),
-            color: Colors.black,
-          ),
-          IconButton(
-            onPressed: () async {
-              FirebaseAuthMethod(FirebaseAuth.instance).signOut(context);
-            },
-            icon: Icon(Icons.logout),
-            color: Colors.black,
-          ),
-        ],
-        backgroundColor: Color(0xff005acd),
-      ),
-      body: Container(
-        decoration: BoxDecoration(color: Colors.white),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+    final scaffoldKey = GlobalKey<ScaffoldState>();
+    return userController.user.name == ''
+        ? LoadingScreen()
+        : Scaffold(
+            drawer: const MenuDrawer(),
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, CartPage.routeName);
+                  },
+                  icon: Icon(Icons.shopping_cart),
+                  color: Colors.white,
+                ),
+                IconButton(
+                  onPressed: () async {
+                    FirebaseAuthMethod(FirebaseAuth.instance).signOut(context);
+                  },
+                  icon: Icon(Icons.logout),
+                  color: Colors.white,
+                ),
+              ],
+              backgroundColor: Color(0xff005acd),
             ),
-            itemCount: controller.products.length,
-            itemBuilder: ((context, index) {
-              return ProductTile(
-                product: controller.products[index],
-                ontap: () {
-                  controller.cartProducts.add(controller.products[index]);
-                  var snackBar = SnackBar(
-                    content: Text('Added to Cart!'),
-                    duration: Duration(seconds: 1),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                },
-              );
-            }),
-          ),
-        ),
-      ),
-    );
+            body: Container(
+              decoration: BoxDecoration(color: Colors.white),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
+                  itemCount: controller.products.length,
+                  itemBuilder: ((context, index) {
+                    return ProductTile(
+                      product: controller.products[index],
+                      ontap: () {
+                        controller.cartProducts.add(controller.products[index]);
+                        var snackBar = SnackBar(
+                          content: Text('Added to Cart! Click 🛒 to update your order'),
+                          duration: Duration(seconds: 1),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      },
+                    );
+                  }),
+                ),
+              ),
+            ),
+          );
   }
 }
 

@@ -1,10 +1,11 @@
 import 'package:apna_mart/controllers/user_provider.dart';
+import 'package:apna_mart/main.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:apna_mart/utility/textfield.dart';
 import 'package:apna_mart/utility/showSnackbar.dart';
-import 'dashboard.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,15 +19,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController address1Controller = TextEditingController();
   final TextEditingController address2Controller = TextEditingController();
   final TextEditingController address3Controller = TextEditingController();
+  late Map<String, dynamic> userData;
+  Future<void> getUserData() async {
+    // Retrieve the user's profile data from Firebase
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userid).get();
+
+    if (snapshot.exists) {
+      // Populate the text controllers with the retrieved data
+      userData = snapshot.data()!;
+      nameController.text = userData['name'] ?? '';
+      address1Controller.text = userData['address1'] ?? '';
+      address2Controller.text = userData['address2'] ?? '';
+      address3Controller.text = userData['address3'] ?? '';
+    }
+  }
+
+  void getuserid() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      userid = pref.getString('uid');
+    });
+  }
+
+  @override
+  void initState() {
+    getuserid();
+    getUserData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var userProviderModel = Provider.of<UserProvider>(context);
-    nameController.text = userProviderModel.user.name;
-    address1Controller.text = userProviderModel.user.address1;
-    address2Controller.text = userProviderModel.user.address2;
-    address3Controller.text = userProviderModel.user.address3;
-
     return Scaffold(
       body: Container(
         child: Padding(
@@ -76,21 +101,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   print(address2Controller.text);
                   print(address3Controller.text);
 
-                  String userid = userProviderModel.getUserUid();
-
                   Map<String, dynamic> body = {
-                            'uid': userProviderModel.getUserUid(),
-                            'name': nameController.text,
-                            'address1':address1Controller.text,
-                            'address2':address2Controller.text,
-                            'address3':address3Controller.text,
-                            'phoneNumber': userProviderModel
-                                .userCredential.user!.phoneNumber
+                    'uid': userid,
+                    'name': nameController.text,
+                    'address1': address1Controller.text,
+                    'address2': address2Controller.text,
+                    'address3': address3Controller.text,
+                    'phoneNumber': userData['phoneNumber']
                   };
 
-                  userProviderModel.addUser(userid, body);
+                  userProviderModel.addUser(userid!, body);
                   showSnackBar(context, 'Details updated Successfully!');
-                  Navigator.pushReplacementNamed(context, Dashboard.routeName);
+                  Navigator.pop(context);
                 },
                 child: const Text('Update'),
               ),

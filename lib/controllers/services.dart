@@ -92,6 +92,12 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+
+  void emptyCart() {
+    _cartProducts = [];
+    notifyListeners();
+  }
+
   void increaseQuantity(int index) {
     _cartProducts[index].quantity += 1;
     notifyListeners();

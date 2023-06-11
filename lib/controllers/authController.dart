@@ -4,8 +4,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/utility/showSnackbar.dart';
 import 'package:apna_mart/utility/showOtpDialog.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:apna_mart/controllers/user_provider.dart';
+import 'package:apna_mart/controllers/models.dart';
 
 class FirebaseAuthMethod {
   final FirebaseAuth _auth;
@@ -13,7 +15,7 @@ class FirebaseAuthMethod {
   User get user => _auth.currentUser!;
 
   Future<UserCredential> phoneSignIn(
-    BuildContext context, String phoneNumber) async {
+      BuildContext context, String phoneNumber) async {
     final completer = Completer<UserCredential>();
     TextEditingController otpController = TextEditingController();
     try {
@@ -60,6 +62,13 @@ class FirebaseAuthMethod {
       await _auth.signOut();
       SharedPreferences pref = await SharedPreferences.getInstance();
       await pref.remove('uid');
+      Provider.of<UserProvider>(context, listen:false).user = UserModal(
+          name: '',
+          address1: '',
+          address2: '',
+          address3: '',
+          phoneNumber: '',
+          uid: '');
       Navigator.pushNamed(context, LoginPage.routeName);
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!); // Displaying the error message

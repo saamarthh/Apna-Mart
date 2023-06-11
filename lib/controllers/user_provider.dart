@@ -1,12 +1,18 @@
 import 'package:apna_mart/controllers/models.dart';
+import 'package:apna_mart/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProvider extends ChangeNotifier {
   late UserCredential userCredential;
-  late UserModal user;
-
+  UserModal user = UserModal(
+      name: '',
+      address1: '',
+      address2: '',
+      address3: '',
+      phoneNumber: '',
+      uid: '');
   String uid = '';
 
   void setUserCredential(UserCredential userCredential) {
@@ -19,11 +25,11 @@ class UserProvider extends ChangeNotifier {
   }
 
   String getUserUid() {
-    return userCredential.user!.uid;
+    return this.uid;
   }
 
   void setUid(String uid) {
-    this.uid = uid;
+    this.uid = uid==''?userid! : uid;
     notifyListeners();
   }
 
@@ -51,13 +57,22 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+
   void addUser(String userid, Map<String, dynamic> user) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userid)
           .set(user);
-      // this.user = user;
+      this.user = UserModal(
+        name: user['name'],
+        address1: user['address1'],
+        address2: user['address2'],
+        address3: user['address3'],
+        phoneNumber: user['phoneNumber'],
+        uid: user['uid'],
+      );
+      this.uid = userid;
       notifyListeners();
     } catch (error) {
       print(error);
