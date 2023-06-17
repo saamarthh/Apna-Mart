@@ -21,7 +21,7 @@ class Product {
       'name': name,
       'quantity': quantity,
       'price': price,
-      'image': image
+      'image': image,
     };
   }
 
@@ -77,11 +77,13 @@ class UserModal {
 class Orders {
   String productName;
   String customerName;
-  String quantity;
+  int quantity;
   double totalCost;
   String address;
   String phoneNumber;
   int productCost;
+  String orderId;
+  String date;
 
   Orders(
       {required this.productName,
@@ -90,7 +92,9 @@ class Orders {
       required this.productCost,
       required this.totalCost,
       required this.phoneNumber,
-      required this.address});
+      required this.address,
+      required this.orderId,
+      required this.date});
 
   Map<String, dynamic> toMap() {
     return {
@@ -101,6 +105,8 @@ class Orders {
       'totalCost': totalCost,
       'phoneNumber': phoneNumber,
       'address': address,
+      'orderId': orderId,
+      'date': date,
     };
   }
 
@@ -112,6 +118,8 @@ class Orders {
         totalCost: map['totalCost'],
         address: map['address'],
         phoneNumber: map['phoneNumber'],
-        productCost: map['productCost']);
+        productCost: map['productCost'],
+        orderId: map['orderId'],
+        date: map['date']);
   }
 }

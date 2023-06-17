@@ -2,12 +2,10 @@ import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/utility/loading.dart';
 import 'package:apna_mart/utility/menuDrawer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/services.dart';
-import 'package:apna_mart/controllers/authController.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,6 +47,14 @@ class _DashboardState extends State<Dashboard> {
         : Scaffold(
             drawer: const MenuDrawer(),
             appBar: AppBar(
+              title: Text(
+                'Hello ${userController.user.name} 👋',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
+              ),
               actions: [
                 IconButton(
                   onPressed: () {
@@ -57,20 +63,13 @@ class _DashboardState extends State<Dashboard> {
                   icon: Icon(Icons.shopping_cart),
                   color: Colors.white,
                 ),
-                IconButton(
-                  onPressed: () async {
-                    FirebaseAuthMethod(FirebaseAuth.instance).signOut(context);
-                  },
-                  icon: Icon(Icons.logout),
-                  color: Colors.white,
-                ),
               ],
               backgroundColor: Color(0xff005acd),
             ),
             body: Container(
               decoration: BoxDecoration(color: Colors.white),
               child: Padding(
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(3.0),
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -82,7 +81,8 @@ class _DashboardState extends State<Dashboard> {
                       ontap: () {
                         controller.cartProducts.add(controller.products[index]);
                         var snackBar = SnackBar(
-                          content: Text('Added to Cart! Click 🛒 to update your order'),
+                          content: Text(
+                              'Added to Cart! Click 🛒 to update your order'),
                           duration: Duration(seconds: 1),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -103,61 +103,67 @@ class ProductTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(7),
             boxShadow: [
               BoxShadow(
-                  color: Colors.grey.withOpacity(.5),
-                  offset: Offset(3, 2),
-                  blurRadius: 7)
+                  color: Colors.grey.withOpacity(.35),
+                  offset: Offset(1, 1),
+                  blurRadius: 3)
             ]),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                  ),
+              // child: ClipRRect(
+              //     borderRadius: BorderRadius.only(
+              //       topLeft: Radius.circular(15),
+              //       topRight: Radius.circular(15),
+              //     ),
+              //     child: ),
+              child: SizedBox(
+                height: 70,
+                width: 70,
                   child: Image.network(
-                    product.image,
-                    width: double.infinity,
-                  )),
+                product.image,
+              )),
             ),
-            CustomText(
-              text: product.name,
-              size: 18,
-              weight: FontWeight.bold,
-            ),
-            CustomText(
-              text: "",
-              color: Colors.grey,
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: CustomText(
-                    text: "Rs.${product.price}",
-                    size: 22,
-                    weight: FontWeight.bold,
-                  ),
+                CustomText(
+                  text: product.name,
+                  size: 18,
+                  weight: FontWeight.w300,
                 ),
+                
                 SizedBox(
-                  width: 30,
+                  height: 5,
                 ),
-                IconButton(
-                  icon: Icon(Icons.add_shopping_cart),
-                  onPressed: ontap,
-                )
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: CustomText(
+                        text: "Rs.${product.price}",
+                        size: 22,
+                        weight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 30,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add_shopping_cart),
+                      onPressed: ontap,
+                    )
+                  ],
+                ),
               ],
             ),
           ],

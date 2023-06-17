@@ -34,11 +34,11 @@ class _SignupState extends State<Signup> {
                     children: [
                       const SizedBox(height: 30),
                       const Text(
-                        'User Info',
+                        'Fill in details',
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white),
+                            color: Colors.black),
                       ),
                       const SizedBox(height: 30),
                       TextInputField(

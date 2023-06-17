@@ -60,18 +60,19 @@ class _LoginPageState extends State<LoginPage> {
         color: Colors.white,
         child: Center(
           child: ListView(
+            shrinkWrap: true,
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
-                // Hero(
-                //   tag: '',
-                //   child: Padding(
-                //     padding: const EdgeInsets.symmetric(vertical: 8.0),
-                //     child: SizedBox(
-                //       height: MediaQuery.of(context).size.height * 0.25,
-                //       child: Image.asset(''),
-                //     ),
-                //   ),
-                // ),
+                Hero(
+                  tag: 'logo',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: Image.asset('assets/images/logo.png'),
+                    ),
+                  ),
+                ),
                 const Padding(
                   padding: EdgeInsets.only(
                       left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
@@ -91,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                       hideText: false),
                 ),
                 LoginButton(
-                    txt: 'Login', color: Colors.green, onPressed: phoneSignIn),
+                    txt: 'Login', color: Colors.orange, onPressed: phoneSignIn),
               ]),
         ),
       ),

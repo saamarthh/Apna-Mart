@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,8 @@ import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/dashboard.dart';
 import 'package:apna_mart/screens/profileScreen.dart';
 import 'package:apna_mart/screens/orders.dart';
+
+import '../controllers/authController.dart';
 
 
 class MenuDrawer extends StatelessWidget {
@@ -22,23 +25,6 @@ class MenuDrawer extends StatelessWidget {
         ),
         child: ListView(
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hello ${userProvider.user.name} 👋!!',
-                    textAlign: TextAlign.left,
-                    style:
-                        TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                ],
-              ),
-            ),
             ListTile(title: const Text('Browse Products'), onTap: () {
               Navigator.pushNamed(context, Dashboard.routeName);
             }),
@@ -53,6 +39,10 @@ class MenuDrawer extends StatelessWidget {
             ListTile(title: const Text('Your Profile'), onTap: () {
               Navigator.pushNamed(context, ProfileScreen.routeName);
             }),
+             ListTile(title: const Text('Sign Out'), onTap: () {
+              FirebaseAuthMethod(FirebaseAuth.instance).signOut(context);
+              Navigator.pushNamed(context, ProfileScreen.routeName);
+            })
           ],
         ),
       ),

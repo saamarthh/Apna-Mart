@@ -41,6 +41,7 @@ class _OrderConfirmPageState extends State<OrderConfirmPage> {
         ),
         Text(
           "Check your order in 'View Orders' or continue shopping!",
+          textAlign: TextAlign.center,
           style: TextStyle(color: Color.fromARGB(255, 169, 168, 168)),
         ),
         SizedBox(

@@ -12,20 +12,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/screens/orderConfirmation.dart';
+import 'screens/welcome.dart';
 
 String? userid;
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   userid = prefs.getString('uid');
   runApp(MyApp(userid));
 }
 
 class MyApp extends StatefulWidget {
-
   final String? userid;
   const MyApp(this.userid, {Key? key}) : super(key: key);
 
@@ -40,20 +40,22 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (context) => ProductProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
-        ChangeNotifierProvider(create: (context)=> OrderProvider())
+        // ChangeNotifierProvider(create: (context) => OrderProvider()),
       ],
       child: MaterialApp(
+        theme: ThemeData(fontFamily: 'Poppins'),
         debugShowCheckedModeBanner: false,
-        initialRoute: userid==null?LoginPage.routeName:Dashboard.routeName,
-        // initialRoute: OrderConfirmPage.routeName,
+        initialRoute: userid==null?WelcomeScreen.routeName:Dashboard.routeName,
+        // initialRoute: Dashboard.routeName,
         routes: {
+          WelcomeScreen.routeName:(context) => WelcomeScreen(),
           Dashboard.routeName: (context) => Dashboard(),
           CartPage.routeName: (context) => CartPage(),
-          LoginPage.routeName:(context) => LoginPage(),
+          LoginPage.routeName: (context) => LoginPage(),
           Signup.routeName: (context) => Signup(),
-          ProfileScreen.routeName:(context) => ProfileScreen(),
-          OrderConfirmPage.routeName:(context) => OrderConfirmPage(),
-          OrdersPage.routeName:(context) => OrdersPage(),
+          ProfileScreen.routeName: (context) => ProfileScreen(),
+          OrderConfirmPage.routeName: (context) => OrderConfirmPage(),
+          OrdersPage.routeName: (context) => OrdersPage(),
         },
       ),
     );

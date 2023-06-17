@@ -1,5 +1,8 @@
 import 'package:apna_mart/controllers/orderController.dart';
+import 'package:apna_mart/screens/dashboard.dart';
 import 'package:apna_mart/screens/orderConfirmation.dart';
+import 'package:apna_mart/utility/loginButton.dart';
+import 'package:apna_mart/utility/menuDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
 import 'package:provider/provider.dart';
@@ -40,10 +43,14 @@ class _CartPageState extends State<CartPage> {
     controller.totalPrice();
     double totalCost = controller.totalCost;
     return Scaffold(
+      
+      drawer: MenuDrawer(),
       appBar: AppBar(
-        leading: Icon(
-          Icons.menu,
-          color: Colors.black,
+        title: Text(
+          'Your Cart',
+          textAlign: TextAlign.left,
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
         ),
         backgroundColor: Color(0xff005acd),
       ),
@@ -51,9 +58,22 @@ class _CartPageState extends State<CartPage> {
           ? Container(
               color: Colors.white,
               child: Center(
-                child: Text(
-                  'Cart is empty :(',
-                  style: TextStyle(color: Colors.black),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Empty :( ", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(
+                      "Let's shop for something",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    SizedBox(height: 10,),
+                    LoginButton(
+                        txt: "View Dashboard",
+                        color: Colors.orange,
+                        onPressed: () {
+                          Navigator.pushNamed(context, Dashboard.routeName);
+                        })
+                  ],
                 ),
               ),
             )
@@ -84,7 +104,7 @@ class _CartPageState extends State<CartPage> {
                     height: 50,
                     color: Colors.white,
                     child: Padding(
-                      padding: const EdgeInsets.all(14.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

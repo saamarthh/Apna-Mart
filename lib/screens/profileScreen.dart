@@ -60,11 +60,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               const SizedBox(height: 30),
               const Text(
-                'User Info',
+                'Update Profile',
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white),
+                    color: Colors.black),
               ),
               const SizedBox(height: 30),
               TextInputField(
