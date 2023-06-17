@@ -99,6 +99,14 @@ class _CartPageState extends State<CartPage> {
                       },
                     ),
                   ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Divider(
+                      thickness: 1,
+                      color: Colors.grey,
+                      
+                    ),
+                  ),
                   Container(
                     width: double.infinity,
                     height: 50,
@@ -144,7 +152,7 @@ class _CartPageState extends State<CartPage> {
                             context, OrderConfirmPage.routeName);
                       },
                       child: Text(
-                        "Proceed to Payment",
+                        "Confirm Order",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -178,13 +186,13 @@ class CartTile extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Image.network(
-            //     product.image,
-            //     width: 80,
-            //   ),
-            // ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.network(
+                product.image,
+                width: 80,
+              ),
+            ),
             Expanded(
                 child: Wrap(
               direction: Axis.vertical,
@@ -198,16 +206,20 @@ class CartTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                        icon: Icon(Icons.chevron_left),
+                        icon: Icon(Icons.remove, weight: 20,),
                         onPressed: decreaseCount),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomText(
-                        text: product.quantity.toString(),
+                    Container(
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+                      child: Center(
+                        child: CustomText(
+                          text: product.quantity.toString(),
+                        ),
                       ),
                     ),
                     IconButton(
-                        icon: Icon(Icons.chevron_right),
+                        icon: Icon(Icons.add, weight: 20,),
                         onPressed: increaseCount),
                   ],
                 )

@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
-import 'package:apna_mart/screens/categoryDashboard.dart';
 import 'package:apna_mart/utility/loading.dart';
 import 'package:apna_mart/utility/menuDrawer.dart';
 import 'package:flutter/material.dart';
@@ -14,16 +11,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 var providerController;
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class CategoryDashboard extends StatefulWidget {
 
-  static const routeName = 'dashboard';
+  String categoryName;
+  CategoryDashboard({super.key, required this.categoryName});
+
+  static const routeName = 'category-dashboard';
+
+  
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<CategoryDashboard> createState() => _CategoryDashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _CategoryDashboardState extends State<CategoryDashboard> {
   void getuserid() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
@@ -42,12 +43,11 @@ class _DashboardState extends State<Dashboard> {
     var controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
     userController.fetchUser(userid!);
-    controller.fetchCategory();
-    controller.fetchProduct();
+    controller.fetchCategoryProduct(widget.categoryName);
     controller.totalPrice();
     providerController = controller;
     final scaffoldKey = GlobalKey<ScaffoldState>();
-    return userController.user.name == ''
+    return userController.user.name == '' || controller.categoryProducts.length == 0
         ? LoadingScreen()
         : Scaffold(
             drawer: const MenuDrawer(),
@@ -80,103 +80,29 @@ class _DashboardState extends State<Dashboard> {
             body: Container(
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
+                    child: Text("OUR ${widget.categoryName.toUpperCase()} COLLECTION", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),),
+                  ),
                   Expanded(
                     child: ListView(
-                      shrinkWrap: true,
                       children: [
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 8, top: 8, bottom: 8),
-                          child: Text(
-                            "SHOP BY CATEGORY",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                              ),
-                              itemCount: controller.category.length,
-                              itemBuilder: ((context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(3.0),
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                CategoryDashboard(
-                                              categoryName: controller
-                                                  .category[index].categoryName,
-                                            ),
-                                          ));
-                                    },
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                            width: 50,
-                                            height: 50,
-                                            child: Image.network(controller
-                                                .category[index]
-                                                .categoryImage)),
-                                        Center(
-                                          child: Text(
-                                            "${controller.category[index].categoryName}",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              })),
-                        ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 8, top: 8, bottom: 8),
-                          child: Text(
-                            "OUR PRODUCTS",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: GridView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                             ),
-                            itemCount: controller.products.length,
+                            itemCount: controller.categoryProducts.length,
                             itemBuilder: ((context, index) {
-                              Product cartItem = controller.products[index];
-                              // bool addDisabled = false;
+                              Product cartItem = controller.categoryProducts[index];
                               return ProductTile(
                                 product: cartItem,
-                                // addDisabled: addDisabled,
                                 ontap: () {
-                                  // setState(() {
-                                  //   addDisabled = true;
-                                  // });
                                   controller.cartProducts.add(cartItem);
                                   controller.totalPrice();
                                   var snackBar = SnackBar(
@@ -252,7 +178,6 @@ class _DashboardState extends State<Dashboard> {
 class ProductTile extends StatelessWidget {
   final Product product;
   final Function() ontap;
-  // bool addDisabled = false;
   ProductTile({required this.product, required this.ontap});
   @override
   Widget build(BuildContext context) {
@@ -305,40 +230,15 @@ class ProductTile extends StatelessWidget {
                     SizedBox(
                       width: 30,
                     ),
-                    // addDisabled ? Container(
-                    //     decoration: BoxDecoration(
-                    //         color: Colors.white,
-                    //         borderRadius: BorderRadius.circular(3),
-                    //         border: Border.all(color: Colors.orange)),
-                          
-                    //     child: Padding(
-                    //       padding: const EdgeInsets.symmetric(
-                    //           vertical: 5.0, horizontal: 8),
-                    //       child: Text(
-                    //         "Added",
-                    //         style: TextStyle(
-                    //             color: Colors.orange,
-                    //             fontWeight: FontWeight.bold),
-                    //       ),
-                    //     ),
-                      TextButton(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.orange,
-                            borderRadius: BorderRadius.circular(3)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5.0, horizontal: 8),
-                          child: Text(
-                            "Add",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                    TextButton(child: Container(
+                      decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(3)),
+                      
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8),
+                        child: Text("Add", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                       ),
-                      onPressed: ontap,
-                    )
+                    ),
+                    onPressed: ontap,)
                   ],
                 ),
               ],

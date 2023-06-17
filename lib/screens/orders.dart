@@ -33,8 +33,15 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
     getuserid();
-    super.initState();
     orderProvider.fetchOrders(userid!);
+    super.initState();
+    
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -114,9 +121,17 @@ class _OrdersPageState extends State<OrdersPage> {
                           SizedBox(
                             height: 10,
                           ),
+                          Text(
+                            'Order Time: ${orderProvider.products[index][0].dateTime}',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Container(
                             child: ListView.builder(
                                 shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
                                 itemCount: orderProvider.products[index].length,
                                 // itemCount: orderlist[index].length,
                                 itemBuilder: (context, idx) {

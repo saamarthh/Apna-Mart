@@ -4,7 +4,7 @@ import 'models.dart';
 import 'package:intl/intl.dart';
 import 'package:short_uuids/short_uuids.dart';
 
-class OrderProvider{
+class OrderProvider {
   List<List<Orders>> _products = [];
   List<List<Orders>> get products => _products;
   void addOrders(
@@ -12,7 +12,7 @@ class OrderProvider{
     try {
       int count = 1;
       String orderId = ShortUuid().generate();
-      String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
+      String date = DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now());
       Map<String, dynamic> order;
       cartProducts.forEach((item) async {
         order = {
@@ -22,7 +22,7 @@ class OrderProvider{
           'productCost': item.price * item.quantity,
           'totalCost': totalPrice,
           'phoneNumber': user.phoneNumber,
-          'address': '${user.address1} ${user.address2} ${user.address3}',
+          'address': '${user.address1} ${user.address2} - ${user.pinCode}',
           'date': date,
           'orderId': orderId,
         };
@@ -32,6 +32,10 @@ class OrderProvider{
             .doc(user.uid)
             .collection(orderId)
             .doc()
+            .set(order);
+        await FirebaseFirestore.instance
+            .collection('adminOrders')
+            .doc(orderId)
             .set(order);
 
         await FirebaseFirestore.instance
@@ -56,9 +60,8 @@ class OrderProvider{
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('orderId')
           .doc(userid)
-          .collection('orderId')
+          .collection('orderId').orderBy("date", descending: true).limit(5)
           .get();
-
       snapshot.docs.forEach((doc) async {
         var id = doc.id;
         final List<Orders> loadedProduct = [];
@@ -77,7 +80,7 @@ class OrderProvider{
               totalCost: element['totalCost'],
               phoneNumber: element['phoneNumber'],
               address: element['address'],
-              date: element['date'],
+              dateTime: element['date'],
               orderId: element['orderId']));
         });
         orderList.add(loadedProduct);
@@ -89,3 +92,4 @@ class OrderProvider{
     }
   }
 }
+

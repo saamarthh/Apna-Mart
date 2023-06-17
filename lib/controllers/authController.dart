@@ -62,13 +62,13 @@ class FirebaseAuthMethod {
       await _auth.signOut();
       SharedPreferences pref = await SharedPreferences.getInstance();
       await pref.remove('uid');
-      Provider.of<UserProvider>(context, listen:false).user = UserModal(
+      Provider.of<UserProvider>(context, listen: false).user = UserModal(
           name: '',
           address1: '',
           address2: '',
-          address3: '',
           phoneNumber: '',
-          uid: '');
+          uid: '',
+          pinCode: '');
       Navigator.pushNamed(context, LoginPage.routeName);
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!); // Displaying the error message

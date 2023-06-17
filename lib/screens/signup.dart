@@ -1,4 +1,4 @@
-import 'package:apna_mart/utility/textfield.dart';
+import 'package:apna_mart/utility/textFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -19,9 +19,7 @@ class _SignupState extends State<Signup> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController address1Controller = TextEditingController();
   final TextEditingController address2Controller = TextEditingController();
-  final TextEditingController address3Controller = TextEditingController();
-
-  
+  final TextEditingController pinCodeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +30,7 @@ class _SignupState extends State<Signup> {
                   padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
                   child: ListView(
                     children: [
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 10),
                       const Text(
                         'Fill in details',
                         style: TextStyle(
@@ -41,56 +39,66 @@ class _SignupState extends State<Signup> {
                             color: Colors.black),
                       ),
                       const SizedBox(height: 30),
-                      TextInputField(
+                      TextInput(
                         userInput: nameController,
-                        hintTitle: 'Name',
+                        hintTitle: 'Name *',
                         keyboardType: TextInputType.name,
                         hideText: false,
                       ),
                       const SizedBox(height: 20),
-                      TextInputField(
+                      TextInput(
                         userInput: address1Controller,
-                        hintTitle: 'Address Line 1',
+                        hintTitle: 'Address Line 1 *',
                         keyboardType: TextInputType.streetAddress,
                         hideText: false,
                       ),
                       const SizedBox(height: 20),
-                      TextInputField(
+                      TextInput(
                         userInput: address2Controller,
-                        hintTitle: 'Address Line 2',
+                        hintTitle: 'Address Line 2 *',
                         keyboardType: TextInputType.streetAddress,
                         hideText: false,
                       ),
                       const SizedBox(height: 20),
-                      TextInputField(
-                        userInput: address3Controller,
-                        hintTitle: 'Address Line 3',
-                        keyboardType: TextInputType.streetAddress,
+
+                      TextInput(
+                        userInput: pinCodeController,
+                        hintTitle: 'Pincode *',
+                        keyboardType: TextInputType.number,
                         hideText: false,
                       ),
                       ElevatedButton(
-                        onPressed: () async {
-                          print(nameController.text);
-                          print(address1Controller.text);
-                          print(address2Controller.text);
-                          print(address3Controller.text);
+                        onPressed: nameController.text.isEmpty ||
+                                address1Controller.text.isEmpty ||
+                                address2Controller.text.isEmpty ||
+                                pinCodeController.text.isEmpty
+                            ? () {
+                                showSnackBar(
+                                    context, 'User Added Successfully');
+                              }
+                            : () async {
+                                print(nameController.text);
+                                print(address1Controller.text);
+                                print(address2Controller.text);
+                                print(pinCodeController.text);
 
-                          String userid = userProviderModel.getUserUid();
+                                String userid = userProviderModel.getUserUid();
 
-                          Map<String, dynamic> body = {
-                            'uid': userid,
-                            'name': nameController.text,
-                            'address1':address1Controller.text,
-                            'address2':address2Controller.text,
-                            'address3':address3Controller.text,
-                            'phoneNumber': userProviderModel
-                                .userCredential.user!.phoneNumber
-                          };
-                          userProviderModel.addUser(userid, body);
-                          showSnackBar(context, 'User Added Successfully');
-                          Navigator.pushReplacementNamed(
-                              context, Dashboard.routeName);
-                        },
+                                Map<String, dynamic> body = {
+                                  'uid': userid,
+                                  'name': nameController.text,
+                                  'address1': address1Controller.text,
+                                  'address2': address2Controller.text,
+                                  'pinCode': pinCodeController.text,
+                                  'phoneNumber': userProviderModel
+                                      .userCredential.user!.phoneNumber
+                                };
+                                userProviderModel.addUser(userid, body);
+                                showSnackBar(
+                                    context, 'User Added Successfully');
+                                Navigator.pushReplacementNamed(
+                                    context, Dashboard.routeName);
+                              },
                         child: const Text('Submit'),
                       ),
                     ],

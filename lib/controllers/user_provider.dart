@@ -10,7 +10,7 @@ class UserProvider extends ChangeNotifier {
       name: '',
       address1: '',
       address2: '',
-      address3: '',
+      pinCode: '',
       phoneNumber: '',
       uid: '');
   String uid = '';
@@ -49,7 +49,7 @@ class UserProvider extends ChangeNotifier {
         phoneNumber: data['phoneNumber'],
         address1: data['address1'],
         address2: data['address2'],
-        address3: data['address3'],
+        pinCode: data['pinCode'],
       );
       notifyListeners();
     } catch (error) {
@@ -68,9 +68,9 @@ class UserProvider extends ChangeNotifier {
         name: user['name'],
         address1: user['address1'],
         address2: user['address2'],
-        address3: user['address3'],
         phoneNumber: user['phoneNumber'],
         uid: user['uid'],
+        pinCode: user['pinCode']
       );
       this.uid = userid;
       notifyListeners();

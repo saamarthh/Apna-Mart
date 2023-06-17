@@ -6,6 +6,7 @@ class Product {
   String name;
   int quantity;
   int price;
+  String category;
 
   Product({
     required this.id,
@@ -13,6 +14,7 @@ class Product {
     required this.image,
     required this.quantity,
     required this.price,
+    required this.category,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +24,7 @@ class Product {
       'quantity': quantity,
       'price': price,
       'image': image,
+      'category': category,
     };
   }
 
@@ -31,7 +34,8 @@ class Product {
         name: map['name'],
         image: map['image'],
         quantity: map['quantity'],
-        price: map['price']);
+        price: map['price'],
+        category: map['category']);
   }
 }
 
@@ -41,16 +45,16 @@ class UserModal {
   String name;
   String address1;
   String address2;
-  String address3;
   String phoneNumber;
+  String pinCode;
 
   UserModal(
       {required this.name,
       required this.address1,
       required this.address2,
-      required this.address3,
       required this.phoneNumber,
-      required this.uid});
+      required this.uid,
+      required this.pinCode});
 
   Map<String, dynamic> toMap() {
     return {
@@ -58,8 +62,8 @@ class UserModal {
       'name': name,
       'address1': address1,
       'address2': address2,
-      'address3': address3,
-      'phoneNumber': phoneNumber
+      'phoneNumber': phoneNumber,
+      'pinCode': pinCode
     };
   }
 
@@ -69,8 +73,8 @@ class UserModal {
         name: map['name'],
         address1: map['address1'],
         address2: map['address2'],
-        address3: map['address3'],
-        phoneNumber: map['phoneNumber']);
+        phoneNumber: map['phoneNumber'],
+        pinCode: map['pinCode']);
   }
 }
 
@@ -83,7 +87,7 @@ class Orders {
   String phoneNumber;
   int productCost;
   String orderId;
-  String date;
+  String dateTime;
 
   Orders(
       {required this.productName,
@@ -94,7 +98,7 @@ class Orders {
       required this.phoneNumber,
       required this.address,
       required this.orderId,
-      required this.date});
+      required this.dateTime});
 
   Map<String, dynamic> toMap() {
     return {
@@ -106,7 +110,7 @@ class Orders {
       'phoneNumber': phoneNumber,
       'address': address,
       'orderId': orderId,
-      'date': date,
+      'date': dateTime,
     };
   }
 
@@ -120,6 +124,25 @@ class Orders {
         phoneNumber: map['phoneNumber'],
         productCost: map['productCost'],
         orderId: map['orderId'],
-        date: map['date']);
+        dateTime: map['date']);
+  }
+}
+
+class Category {
+  String categoryName;
+  String categoryImage;
+
+  Category({required this.categoryName, required this.categoryImage});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'categoryName': categoryName,
+      'categoryImage': categoryImage,
+    };
+  }
+
+  factory Category.fromMap(Map<String, dynamic> map) {
+    return Category(
+        categoryImage: map['categoryImage'], categoryName: map['categoryName']);
   }
 }
