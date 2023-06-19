@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/utility/showSnackbar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard.dart';
 
 class Signup extends StatefulWidget {

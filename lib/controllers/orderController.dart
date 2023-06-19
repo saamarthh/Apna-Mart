@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'models.dart';
 import 'package:intl/intl.dart';
 import 'package:short_uuids/short_uuids.dart';
@@ -10,7 +9,6 @@ class OrderProvider {
   void addOrders(
       UserModal user, List<Product> cartProducts, double totalPrice) {
     try {
-      int count = 1;
       String orderId = ShortUuid().generate();
       String date = DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now());
       Map<String, dynamic> order;
@@ -35,7 +33,7 @@ class OrderProvider {
             .set(order);
         await FirebaseFirestore.instance
             .collection('adminOrders')
-            .doc(orderId)
+            .doc(orderId).collection('orders').doc()
             .set(order);
 
         await FirebaseFirestore.instance
