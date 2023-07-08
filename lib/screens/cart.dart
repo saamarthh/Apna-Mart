@@ -21,18 +21,24 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  void getuserid() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    setState(() {
-      userid = pref.getString('uid');
-    });
-  }
-
   @override
   void initState() {
-    // TODO: implement initState
-    getuserid();
     super.initState();
+    getUidFromSharedPreferences();
+  }
+
+  Future<void> getUidFromSharedPreferences() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      userid = pref.getString('uid') ?? '';
+    });
+    fetchUserData(userid!);
+  }
+
+  Future<void> fetchUserData(String uid) async {
+    final userProviderModel = Provider.of<UserProvider>(context, listen: false);
+    await userProviderModel.fetchUser(uid);
+    print(userProviderModel.user.name);
   }
 
   @override

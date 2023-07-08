@@ -13,7 +13,7 @@ class OrderProvider {
       String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
       Map<String, dynamic> order;
-      cartProducts.forEach((item) async {
+      await Future.wait(cartProducts.map((item) async {
         order = {
           'productName': item.name,
           'customerName': user.name,
@@ -24,6 +24,7 @@ class OrderProvider {
           'address': '${user.address1} ${user.address2} - ${user.pinCode}',
           'date': date,
           'orderId': orderId,
+          'orderStatus': 'PENDING',
         };
 
         await FirebaseFirestore.instance
@@ -32,12 +33,13 @@ class OrderProvider {
             .collection(orderId)
             .doc()
             .set(order);
-      });
+      }));
       await FirebaseFirestore.instance.collection('orderId').doc(orderId).set({
         'orderId': orderId,
         'date': date,
         'customerName': user.name,
-        'uid': user.uid
+        'uid': user.uid,
+        'orderStatus': 'PENDING'
       });
     } catch (error) {
       print(error);
@@ -72,7 +74,8 @@ class OrderProvider {
               phoneNumber: element['phoneNumber'],
               address: element['address'],
               dateTime: element['date'],
-              orderId: element['orderId']));
+              orderId: element['orderId'],
+              orderStatus: doc['orderStatus']));
           print(count++);
         });
         orderList.add(loadedProduct);

@@ -88,6 +88,7 @@ class Orders {
   int productCost;
   String orderId;
   String dateTime;
+  String orderStatus;
 
   Orders(
       {required this.productName,
@@ -98,7 +99,8 @@ class Orders {
       required this.phoneNumber,
       required this.address,
       required this.orderId,
-      required this.dateTime});
+      required this.dateTime,
+      required this.orderStatus});
 
   Map<String, dynamic> toMap() {
     return {
@@ -111,6 +113,7 @@ class Orders {
       'address': address,
       'orderId': orderId,
       'date': dateTime,
+      'orderStatus': orderStatus
     };
   }
 
@@ -124,7 +127,8 @@ class Orders {
         phoneNumber: map['phoneNumber'],
         productCost: map['productCost'],
         orderId: map['orderId'],
-        dateTime: map['date']);
+        dateTime: map['date'],
+        orderStatus: map['orderStatus'],);
   }
 }
 

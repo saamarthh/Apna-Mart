@@ -1,4 +1,5 @@
 import 'package:apna_mart/controllers/models.dart';
+import 'package:apna_mart/screens/loginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
@@ -96,7 +97,7 @@ class MenuDrawer extends StatelessWidget {
                       phoneNumber: '',
                       uid: '',
                       pinCode: '');
-                  Navigator.pushNamed(context, ProfileScreen.routeName);
+                  Navigator.pushNamed(context, LoginPage.routeName);
                 })
           ],
         ),

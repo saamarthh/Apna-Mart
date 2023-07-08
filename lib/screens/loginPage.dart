@@ -43,7 +43,10 @@ class _LoginPageState extends State<LoginPage> {
       final userProviderModel =
           Provider.of<UserProvider>(context, listen: false);
       userProviderModel.setUserCredential(userCredential);
-      await pref.setString("uid", userCredential.user!.uid);
+      pref.setString("uid", userCredential.user!.uid);
+      setState(() {
+        userid = userCredential.user!.uid;
+      });
       userProviderModel.setUid(userCredential.user!.uid);
       print(pref.getString('uid'));
       if (userCredential.additionalUserInfo!.isNewUser) {
@@ -51,8 +54,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         if (userid == null) {
           Navigator.pushReplacementNamed(context, Signup.routeName);
-        }
-        else {
+        } else {
           Navigator.pushReplacementNamed(context, Dashboard.routeName);
         }
       }

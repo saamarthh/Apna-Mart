@@ -38,7 +38,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double distanceInKm = 0.0;
-  final desiredLocation = LatLng(37.7749, -122.4194);
+  final desiredLocation = LatLng(18.618, 73.789);
 
     @override
   void initState() {
@@ -106,9 +106,8 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         theme: ThemeData(fontFamily: 'Poppins'),
         debugShowCheckedModeBanner: false,
-        // initialRoute:
-        //     userid == null ? WelcomeScreen.routeNam : Dashboard.reouteName,
-        initialRoute: Dashboard.routeName,
+        initialRoute:
+            userid == null ? WelcomeScreen.routeName : Dashboard.routeName,
         routes: {
           WelcomeScreen.routeName: (context) => WelcomeScreen(),
           Dashboard.routeName: (context) => Dashboard(distanceInKm: distanceInKm,),

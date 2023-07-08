@@ -50,8 +50,7 @@ class _DashboardState extends State<Dashboard> {
     final user = userProviderModel.user;
     var controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
-    userController.user.name = "sarang";
-    // userController.fetchUser(userid!);
+    userController.fetchUser(userid!);
     controller.fetchCategory();
     controller.fetchProduct();
     controller.totalPrice();

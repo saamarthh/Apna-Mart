@@ -27,20 +27,31 @@ class _OrdersPageState extends State<OrdersPage> {
     });
   }
 
-  // List<List<Orders>> orderList = [];
   var orderProvider = OrderProvider();
 
-  @override
+   @override
   void initState() {
-    getuserid();
-    orderProvider.fetchOrders(userid!);
     super.initState();
-    
+    getUidFromSharedPreferences();
+    orderProvider.fetchOrders(userid!);
+  }
+
+  Future<void> getUidFromSharedPreferences() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      userid = pref.getString('uid') ?? '';
+    });
+    fetchUserData(userid!);
+  }
+
+  Future<void> fetchUserData(String uid) async {
+    final userProviderModel = Provider.of<UserProvider>(context, listen: false);
+    await userProviderModel.fetchUser(uid);
+    print(userProviderModel.user.name);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -108,7 +119,7 @@ class _OrdersPageState extends State<OrdersPage> {
                         children: [
                           Center(
                               child: Text(
-                            'Order#: ${orderProvider.products[index][0].orderId}',
+                            'Order#: ${orderProvider.products[index][0].orderId} : ${orderProvider.products[index][0].orderStatus}',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           )),
                           SizedBox(
