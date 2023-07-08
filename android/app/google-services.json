@@ -41,6 +41,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350830037987:android:8ae0d0fe73afb9562a2ed6",
+        "android_client_info": {
+          "package_name": "com.example.apna_mart_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350830037987-20j7bkcsfgt46eqk0r8cdqhqss5eouav.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3qDEM5yyCC-zta403p5_pKJZ53BD40xI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350830037987-20j7bkcsfgt46eqk0r8cdqhqss5eouav.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

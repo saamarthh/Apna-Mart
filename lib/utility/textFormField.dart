@@ -20,16 +20,17 @@ class TextInput extends StatefulWidget {
 
 class _TextInputState extends State<TextInput> {
   String? get errorText {
-  // at any time, we can get the text from _controller.value.text
-  final text = widget.userInput.value.text;
-  // Note: you can do your own custom validation here
-  // Move this logic this outside the widget for more testable code
-  if (text.isEmpty) {
-    return 'Can\'t be empty';
+    // at any time, we can get the text from _controller.value.text
+    final text = widget.userInput.value.text;
+    // Note: you can do your own custom validation here
+    // Move this logic this outside the widget for more testable code
+    if (text.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    // return null if the text is valid
+    return null;
   }
-  // return null if the text is valid
-  return null;
-}
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -50,7 +51,9 @@ class _TextInputState extends State<TextInput> {
               ),
             ),
             TextField(
-              onChanged: (text) => setState(() => text),
+              onChanged: (text) {
+                setState(() => text);
+              },
               obscureText: widget.hideText,
               controller: widget.userInput,
               autocorrect: false,

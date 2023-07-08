@@ -1,3 +1,4 @@
+import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/utility/textfield.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = 'login';
@@ -18,6 +20,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController phoneController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -40,12 +43,18 @@ class _LoginPageState extends State<LoginPage> {
       final userProviderModel =
           Provider.of<UserProvider>(context, listen: false);
       userProviderModel.setUserCredential(userCredential);
-      pref.setString("uid", userCredential.user!.uid);
+      await pref.setString("uid", userCredential.user!.uid);
       userProviderModel.setUid(userCredential.user!.uid);
+      print(pref.getString('uid'));
       if (userCredential.additionalUserInfo!.isNewUser) {
         Navigator.pushReplacementNamed(context, Signup.routeName);
       } else {
-        Navigator.pushReplacementNamed(context, Dashboard.routeName);
+        if (userid == null) {
+          Navigator.pushReplacementNamed(context, Signup.routeName);
+        }
+        else {
+          Navigator.pushReplacementNamed(context, Dashboard.routeName);
+        }
       }
     } else {
       print('error');
@@ -60,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
         color: Colors.white,
         child: Center(
           child: ListView(
-            shrinkWrap: true,
+              shrinkWrap: true,
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
                 Hero(
@@ -91,8 +100,20 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.phone,
                       hideText: false),
                 ),
-                LoginButton(
-                    txt: 'Login', color: Colors.orange, onPressed: phoneSignIn),
+                isLoading
+                    ? SpinKitRing(color: Colors.orange)
+                    : LoginButton(
+                        txt: 'Login',
+                        color: Colors.orange,
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          await phoneSignIn();
+                          setState(() {
+                            isLoading = false;
+                          });
+                        })
               ]),
         ),
       ),

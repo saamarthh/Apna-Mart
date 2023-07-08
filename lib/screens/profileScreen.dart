@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:apna_mart/utility/textFormField.dart';
 import 'package:apna_mart/utility/showSnackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/utility/loginButton.dart';
 
@@ -54,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var userProviderModel = Provider.of<UserProvider>(context);
+    var userProviderModel = UserProvider();
     return Scaffold(
       body: Container(
         child: Padding(
