@@ -18,42 +18,59 @@ class FirebaseAuthMethod {
       BuildContext context, String phoneNumber) async {
     final completer = Completer<UserCredential>();
     TextEditingController otpController = TextEditingController();
+    bool isCompleterCompleted = false; // Add a flag
+
     try {
       _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          final userCredential = await _auth.signInWithCredential(credential);
-          completer.complete(userCredential);
+          if (!isCompleterCompleted) {
+            isCompleterCompleted = true;
+            final userCredential = await _auth.signInWithCredential(credential);
+            completer.complete(userCredential);
+          }
         },
         verificationFailed: (e) {
-          showSnackBar(context, e.message!);
-          completer.completeError(
-              e); // Completing the completer with an error to signal failure
+          if (!isCompleterCompleted) {
+            isCompleterCompleted = true;
+            showSnackBar(context, e.message!);
+            completer.completeError(e);
+          }
         },
         codeSent: (String verificationId, int? resendToken) {
           showOtpDialog(
             otpController: otpController,
             context: context,
             onPressed: () async {
-              PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                verificationId: verificationId,
-                smsCode: otpController.text.trim(),
-              );
-              final userCredential1 =
-                  await _auth.signInWithCredential(credential);
-              completer.complete(userCredential1);
-              Navigator.of(context).pop();
+              if (!isCompleterCompleted) {
+                isCompleterCompleted = true;
+                PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                  verificationId: verificationId,
+                  smsCode: otpController.text.trim(),
+                );
+                final userCredential1 =
+                    await _auth.signInWithCredential(credential);
+                completer.complete(userCredential1);
+                Navigator.of(context).pop();
+              }
             },
           );
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          completer.completeError('Verification timed out');
+          if (!isCompleterCompleted) {
+            isCompleterCompleted = true;
+            completer.completeError('Verification timed out');
+          }
         },
       );
     } catch (e) {
       print('Authentication failed: $e');
+      if (!isCompleterCompleted) {
+        completer.completeError(e);
+      }
       rethrow;
     }
+
     return completer.future;
   }
 

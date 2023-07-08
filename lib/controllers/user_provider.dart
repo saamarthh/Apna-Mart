@@ -33,7 +33,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void fetchUser(String userid) async {
+  Future<void> fetchUser(String userid) async {
     try {
       final DocumentSnapshot<Map<String, dynamic>> snapshot =
           await FirebaseFirestore.instance
@@ -58,7 +58,7 @@ class UserProvider extends ChangeNotifier {
   }
 
 
-  void addUser(String userid, Map<String, dynamic> user) async {
+  Future<void> addUser(String userid, Map<String, dynamic> user) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')

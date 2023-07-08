@@ -10,33 +10,38 @@ import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-var providerController;
-
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
-
   static const routeName = 'dashboard';
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  _DashboardState createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  void getuserid() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    setState(() {
-      userid = pref.getString('uid');
-    });
-  }
-
   @override
   void initState() {
-    getuserid();
     super.initState();
+    getUidFromSharedPreferences();
+  }
+
+  Future<void> getUidFromSharedPreferences() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      userid = pref.getString('uid') ?? '';
+    });
+    fetchUserData(userid!);
+  }
+
+  Future<void> fetchUserData(String uid) async {
+    final userProviderModel = Provider.of<UserProvider>(context, listen: false);
+    await userProviderModel.fetchUser(uid);
+    print(userProviderModel.user.name);
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProviderModel = Provider.of<UserProvider>(context);
+    final user = userProviderModel.user;
     var controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
     userController.fetchUser(userid!);
@@ -44,8 +49,8 @@ class _DashboardState extends State<Dashboard> {
     controller.fetchProduct();
     controller.totalPrice();
     providerController = controller;
-    final scaffoldKey = GlobalKey<ScaffoldState>();
-    return userController.user.name == ''
+
+    return user.name.isEmpty
         ? LoadingScreen()
         : Scaffold(
             drawer: const MenuDrawer(),
@@ -60,8 +65,7 @@ class _DashboardState extends State<Dashboard> {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   icon: Icon(Icons.search_rounded),
                   color: Colors.white,
                 ),
@@ -308,7 +312,7 @@ class ProductTile extends StatelessWidget {
                     //         color: Colors.white,
                     //         borderRadius: BorderRadius.circular(3),
                     //         border: Border.all(color: Colors.orange)),
-                          
+
                     //     child: Padding(
                     //       padding: const EdgeInsets.symmetric(
                     //           vertical: 5.0, horizontal: 8),
@@ -319,7 +323,7 @@ class ProductTile extends StatelessWidget {
                     //             fontWeight: FontWeight.bold),
                     //       ),
                     //     ),
-                      TextButton(
+                    TextButton(
                       child: Container(
                         decoration: BoxDecoration(
                             color: Colors.orange,

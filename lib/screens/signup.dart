@@ -59,7 +59,6 @@ class _SignupState extends State<Signup> {
                         hideText: false,
                       ),
                       const SizedBox(height: 20),
-
                       TextInput(
                         userInput: pinCodeController,
                         hintTitle: 'Pincode *',
@@ -67,21 +66,14 @@ class _SignupState extends State<Signup> {
                         hideText: false,
                       ),
                       ElevatedButton(
-                        onPressed: nameController.text.isEmpty ||
-                                address1Controller.text.isEmpty ||
-                                address2Controller.text.isEmpty ||
-                                pinCodeController.text.isEmpty
-                            ? () {
-                                showSnackBar(
-                                    context, 'User Added Successfully');
-                              }
-                            : () async {
+                          onPressed: () {
                                 print(nameController.text);
                                 print(address1Controller.text);
                                 print(address2Controller.text);
                                 print(pinCodeController.text);
 
-                                String userid = userProviderModel.getUserUid();
+                                String userid = userProviderModel
+                                      .userCredential.user!.uid;
 
                                 Map<String, dynamic> body = {
                                   'uid': userid,
