@@ -10,10 +10,13 @@ import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'nodelivery.dart';
+
 var providerController;
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  final double distanceInKm;
+  const Dashboard({super.key, required this.distanceInKm});
 
   static const routeName = 'dashboard';
 
@@ -39,12 +42,18 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
-    userController.fetchUser(userid!);
+    userController.user.name = "sarang";
+    // userController.fetchUser(userid!);
     controller.fetchCategory();
     controller.fetchProduct();
     controller.totalPrice();
     providerController = controller;
     final scaffoldKey = GlobalKey<ScaffoldState>();
+
+    
+    if (widget.distanceInKm > 4.0) {
+      Navigator.pushNamed(context, DeliveryUnavailableScreen.routeName);
+    }
     return userController.user.name == ''
         ? LoadingScreen()
         : Scaffold(
@@ -60,8 +69,7 @@ class _DashboardState extends State<Dashboard> {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   icon: Icon(Icons.search_rounded),
                   color: Colors.white,
                 ),
@@ -308,7 +316,7 @@ class ProductTile extends StatelessWidget {
                     //         color: Colors.white,
                     //         borderRadius: BorderRadius.circular(3),
                     //         border: Border.all(color: Colors.orange)),
-                          
+
                     //     child: Padding(
                     //       padding: const EdgeInsets.symmetric(
                     //           vertical: 5.0, horizontal: 8),
@@ -319,7 +327,7 @@ class ProductTile extends StatelessWidget {
                     //             fontWeight: FontWeight.bold),
                     //       ),
                     //     ),
-                      TextButton(
+                    TextButton(
                       child: Container(
                         decoration: BoxDecoration(
                             color: Colors.orange,
