@@ -38,7 +38,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double distanceInKm = 0.0;
-  final desiredLocation = LatLng(18.618, 73.789);
+  final desiredLocation = LatLng(23.2996732, 85.2723561);
 
     @override
   void initState() {
