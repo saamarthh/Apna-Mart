@@ -38,7 +38,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double distanceInKm = 0.0;
-  final desiredLocation = LatLng(23.2996732, 85.2723561);
+  final desiredLocation = LatLng(23.2992973, 85.2701807);
+  //Latitude: 28.6949376, Longitude: 77.1784704
 
     @override
   void initState() {
@@ -47,10 +48,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> checkUserLocation() async {
-    print("checking location");
+  print("checking location");
 
+  try {
     Position position = await _determinePosition();
-    print(position);
+    print("User position: ${position.latitude}, ${position.longitude}");
 
     num distance = Geodesy().distanceBetweenTwoGeoPoints(
       LatLng(position.latitude, position.longitude),
@@ -60,9 +62,14 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       distanceInKm = distance / 1000; // Convert distance to kilometers
     });
-    print("distance in km");
-    print(distanceInKm);
+
+    print("Distance in km: $distanceInKm");
+  } catch (e) {
+    print("Error determining user location: $e");
+    // Handle the error gracefully here, show an error message, etc.
   }
+}
+
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;

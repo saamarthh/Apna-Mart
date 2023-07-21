@@ -58,7 +58,7 @@ class _DashboardState extends State<Dashboard> {
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
     
-    if (widget.distanceInKm > 4.0) {
+    if (widget.distanceInKm > 10.0) {
       Navigator.pushNamed(context, DeliveryUnavailableScreen.routeName);
     }
 
