@@ -4,19 +4,17 @@ import 'package:apna_mart/screens/dashboard.dart';
 import 'package:apna_mart/screens/loginPage.dart';
 import 'package:apna_mart/screens/nodelivery.dart';
 import 'package:apna_mart/screens/orders.dart';
+import 'package:apna_mart/screens/otp_page.dart';
 import 'package:apna_mart/screens/profileScreen.dart';
 import 'package:apna_mart/screens/signup.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/screens/orderConfirmation.dart';
 import 'screens/welcome.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geodesy/geodesy.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 String? userid;
 
 void main() async {
@@ -37,71 +35,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  double distanceInKm = 0.0;
-  final desiredLocation = LatLng(23.2992973, 85.2701807);
-  //Latitude: 28.6949376, Longitude: 77.1784704
-
-    @override
-  void initState() {
-    super.initState();
-    checkUserLocation();
-  }
-
-  Future<void> checkUserLocation() async {
-  print("checking location");
-
-  try {
-    Position position = await _determinePosition();
-    print("User position: ${position.latitude}, ${position.longitude}");
-
-    num distance = Geodesy().distanceBetweenTwoGeoPoints(
-      LatLng(position.latitude, position.longitude),
-      desiredLocation,
-    );
-
-    setState(() {
-      distanceInKm = distance / 1000; // Convert distance to kilometers
-    });
-
-    print("Distance in km: $distanceInKm");
-  } catch (e) {
-    print("Error determining user location: $e");
-    // Handle the error gracefully here, show an error message, etc.
-  }
-}
-
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-    if (!serviceEnabled) {
-      Fluttertoast.showToast(msg: 'Please enable Your Location Service');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        Fluttertoast.showToast(msg: 'Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      Fluttertoast.showToast(
-          msg:
-              'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    return position;
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -110,21 +43,23 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         // ChangeNotifierProvider(create: (context) => OrderProvider()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         theme: ThemeData(fontFamily: 'Poppins'),
         debugShowCheckedModeBanner: false,
         initialRoute:
             userid == null ? WelcomeScreen.routeName : Dashboard.routeName,
         routes: {
           WelcomeScreen.routeName: (context) => WelcomeScreen(),
-          Dashboard.routeName: (context) => Dashboard(distanceInKm: distanceInKm,),
+          Dashboard.routeName: (context) => Dashboard(),
           CartPage.routeName: (context) => CartPage(),
           LoginPage.routeName: (context) => LoginPage(),
           Signup.routeName: (context) => Signup(),
           ProfileScreen.routeName: (context) => ProfileScreen(),
           OrderConfirmPage.routeName: (context) => OrderConfirmPage(),
           OrdersPage.routeName: (context) => OrdersPage(),
-          DeliveryUnavailableScreen.routeName:(context)=>DeliveryUnavailableScreen()
+          DeliveryUnavailableScreen.routeName: (context) =>
+              DeliveryUnavailableScreen(),
+          OtpPage.routeName: (context) => OtpPage(),
         },
       ),
     );

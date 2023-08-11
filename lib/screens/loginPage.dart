@@ -7,9 +7,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:apna_mart/controllers/authController.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
+import 'otp_page.dart';
 import 'signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
+
 
 class LoginPage extends StatefulWidget {
   static const routeName = 'login';
@@ -27,41 +30,46 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
     phoneController.dispose();
   }
+  Future<void> signInWithPhoneNumber(String phoneNumber) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
 
-  Future<void> phoneSignIn() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
+    await auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await auth.signInWithCredential(credential);
+        // authentication successful, do something
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        // authentication failed, do something
+      },
+      codeSent: (String verificationId, int? resendToken) async {
+        // code sent to phone number, save verificationId for later use
+        String smsCode = ''; // get sms code from user
+        PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: smsCode,
+        );
+        Get.to(OtpPage(), arguments: [verificationId]);
+        await auth.signInWithCredential(credential);
+        // authentication successful, do something
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
+  Future<void> _userLogin() async {
     String prefix = '+91';
     String phoneNumber = phoneController.text;
     String completePhoneNumber = prefix + phoneNumber;
-    print(completePhoneNumber);
-    UserCredential userCredential =
-        await FirebaseAuthMethod(FirebaseAuth.instance).phoneSignIn(
-      context,
-      completePhoneNumber,
-    );
-    if (userCredential != null) {
-      final userProviderModel =
-          Provider.of<UserProvider>(context, listen: false);
-      userProviderModel.setUserCredential(userCredential);
-      pref.setString("uid", userCredential.user!.uid);
-      setState(() {
-        userid = userCredential.user!.uid;
-      });
-      userProviderModel.setUid(userCredential.user!.uid);
-      print(pref.getString('uid'));
-      if (userCredential.additionalUserInfo!.isNewUser) {
-        Navigator.pushReplacementNamed(context, Signup.routeName);
-      } else {
-        if (userid == null) {
-          Navigator.pushReplacementNamed(context, Signup.routeName);
-        } else {
-          Navigator.pushReplacementNamed(context, Dashboard.routeName);
-        }
-      }
+    if (phoneNumber == "") {
+      Get.snackbar(
+        "Please enter the mobile number!",
+        "Failed",
+        colorText: Colors.white,
+      );
     } else {
-      print('error');
+      signInWithPhoneNumber(completePhoneNumber);
     }
-    // Navigator.pushNamed(context, LandingPage.routeName);
   }
 
   @override
@@ -111,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                           setState(() {
                             isLoading = true;
                           });
-                          await phoneSignIn();
+                          await _userLogin();
                           setState(() {
                             isLoading = false;
                           });
