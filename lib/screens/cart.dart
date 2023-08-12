@@ -49,7 +49,6 @@ class _CartPageState extends State<CartPage> {
     controller.totalPrice();
     double totalCost = controller.totalCost;
     return Scaffold(
-      
       drawer: MenuDrawer(),
       appBar: AppBar(
         title: Text(
@@ -67,12 +66,18 @@ class _CartPageState extends State<CartPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Empty :( ", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text("Empty :( ",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                     Text(
                       "Let's shop for something",
                       style: TextStyle(color: Colors.black),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     LoginButton(
                         txt: "View Dashboard",
                         color: Colors.orange,
@@ -110,7 +115,6 @@ class _CartPageState extends State<CartPage> {
                     child: Divider(
                       thickness: 1,
                       color: Colors.grey,
-                      
                     ),
                   ),
                   Container(
@@ -119,24 +123,50 @@ class _CartPageState extends State<CartPage> {
                     color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                      child: Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Grand Total:",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Delivery Fee:",
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              Text(
+                                "Rs.10",
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            ],
                           ),
-                          Text(
-                            "Rs.${totalCost}",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Grand Total:",
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                              Text(
+                                "Rs.${totalCost + 10}",
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -148,12 +178,9 @@ class _CartPageState extends State<CartPage> {
                     height: 50,
                     child: TextButton(
                       onPressed: () {
-                        // makePayment(context, controller.totalCost);
-                        // Navigator.of(context).pushNamedAndRemoveUntil(
-                        //     Dashboard.routeName,
-                        //     (Route<dynamic> route) => false);
                         OrderProvider().addOrders(userController.user,
                             controller.cartProducts, controller.totalCost);
+                        if(!userController.user.isFirstTime) userController.updateLoyaltyPoints(userController.user.loyaltyPoints + controller.totalCost*0.01, userController.user.uid);
                         Navigator.pushReplacementNamed(
                             context, OrderConfirmPage.routeName);
                       },
@@ -212,12 +239,17 @@ class CartTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                        icon: Icon(Icons.remove, weight: 20,),
+                        icon: Icon(
+                          Icons.remove,
+                          weight: 20,
+                        ),
                         onPressed: decreaseCount),
                     Container(
                       height: 30,
                       width: 30,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5)),
                       child: Center(
                         child: CustomText(
                           text: product.quantity.toString(),
@@ -225,7 +257,10 @@ class CartTile extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                        icon: Icon(Icons.add, weight: 20,),
+                        icon: Icon(
+                          Icons.add,
+                          weight: 20,
+                        ),
                         onPressed: increaseCount),
                   ],
                 )

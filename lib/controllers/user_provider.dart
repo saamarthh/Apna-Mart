@@ -10,9 +10,11 @@ class UserProvider extends ChangeNotifier {
       name: '',
       address1: '',
       address2: '',
-      pinCode: '',
       phoneNumber: '',
-      uid: '');
+      uid: '',
+      pinCode: '',
+      isFirstTime: true,
+      loyaltyPoints: 0);
   String uid = '';
 
   void setUserCredential(UserCredential userCredential) {
@@ -29,7 +31,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void setUid(String uid) {
-    this.uid = uid==''?userid! : uid;
+    this.uid = uid == '' ? userid! : uid;
     notifyListeners();
   }
 
@@ -44,19 +46,19 @@ class UserProvider extends ChangeNotifier {
       final data = snapshot.data()!;
 
       this.user = UserModal(
-        name: data['name'],
-        uid: userid,
-        phoneNumber: data['phoneNumber'],
-        address1: data['address1'],
-        address2: data['address2'],
-        pinCode: data['pinCode'],
-      );
+          name: data['name'],
+          uid: userid,
+          phoneNumber: data['phoneNumber'],
+          address1: data['address1'],
+          address2: data['address2'],
+          pinCode: data['pinCode'],
+          isFirstTime: data['isFirstTime'],
+          loyaltyPoints: data['loyaltyPoints']);
       notifyListeners();
     } catch (error) {
       print(error);
     }
   }
-
 
   Future<void> addUser(String userid, Map<String, dynamic> user) async {
     try {
@@ -65,15 +67,27 @@ class UserProvider extends ChangeNotifier {
           .doc(userid)
           .set(user);
       this.user = UserModal(
-        name: user['name'],
-        address1: user['address1'],
-        address2: user['address2'],
-        phoneNumber: user['phoneNumber'],
-        uid: user['uid'],
-        pinCode: user['pinCode']
-      );
+          name: user['name'],
+          address1: user['address1'],
+          address2: user['address2'],
+          phoneNumber: user['phoneNumber'],
+          uid: user['uid'],
+          pinCode: user['pinCode'],
+          isFirstTime: user['isFirstTime'],
+          loyaltyPoints: user['loyaltyPoints']);
       this.uid = userid;
       notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> updateLoyaltyPoints(double points, String docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(docId)
+          .update({'loyaltyPoints': points});
     } catch (error) {
       print(error);
     }

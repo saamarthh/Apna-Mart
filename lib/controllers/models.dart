@@ -47,6 +47,8 @@ class UserModal {
   String address2;
   String phoneNumber;
   String pinCode;
+  bool isFirstTime;
+  double loyaltyPoints;
 
   UserModal(
       {required this.name,
@@ -54,7 +56,9 @@ class UserModal {
       required this.address2,
       required this.phoneNumber,
       required this.uid,
-      required this.pinCode});
+      required this.pinCode,
+      required this.isFirstTime,
+      required this.loyaltyPoints});
 
   Map<String, dynamic> toMap() {
     return {
@@ -63,7 +67,9 @@ class UserModal {
       'address1': address1,
       'address2': address2,
       'phoneNumber': phoneNumber,
-      'pinCode': pinCode
+      'pinCode': pinCode,
+      'isFirstTime': isFirstTime,
+      'loyaltyPoints': loyaltyPoints
     };
   }
 
@@ -74,7 +80,9 @@ class UserModal {
         address1: map['address1'],
         address2: map['address2'],
         phoneNumber: map['phoneNumber'],
-        pinCode: map['pinCode']);
+        pinCode: map['pinCode'],
+        isFirstTime: map['isFirstTime'],
+        loyaltyPoints: map['loyaltyPoints']);
   }
 }
 
@@ -119,16 +127,17 @@ class Orders {
 
   factory Orders.fromMap(Map<String, dynamic> map) {
     return Orders(
-        productName: map['productName'],
-        customerName: map['customerName'],
-        quantity: map['quantity'],
-        totalCost: map['totalCost'],
-        address: map['address'],
-        phoneNumber: map['phoneNumber'],
-        productCost: map['productCost'],
-        orderId: map['orderId'],
-        dateTime: map['date'],
-        orderStatus: map['orderStatus'],);
+      productName: map['productName'],
+      customerName: map['customerName'],
+      quantity: map['quantity'],
+      totalCost: map['totalCost'],
+      address: map['address'],
+      phoneNumber: map['phoneNumber'],
+      productCost: map['productCost'],
+      orderId: map['orderId'],
+      dateTime: map['date'],
+      orderStatus: map['orderStatus'],
+    );
   }
 }
 

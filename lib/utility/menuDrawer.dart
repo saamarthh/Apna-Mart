@@ -39,7 +39,11 @@ class MenuDrawer extends StatelessWidget {
                       style: TextStyle(fontSize: 14, color: Colors.grey)),
                   Text(
                       "Home Address: ${userProvider.user.address1} ${userProvider.user.address2} - ${userProvider.user.pinCode}",
-                      style: TextStyle(fontSize: 14, color: Colors.grey))
+                      style: TextStyle(fontSize: 14, color: Colors.grey)),
+                  Text(
+                      "Your Loyalty Points: ${userProvider.user.loyaltyPoints}",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14))
                 ],
               ),
             ),
@@ -96,7 +100,9 @@ class MenuDrawer extends StatelessWidget {
                       address2: '',
                       phoneNumber: '',
                       uid: '',
-                      pinCode: '');
+                      pinCode: '',
+                      isFirstTime: true,
+                      loyaltyPoints: 0);
                   Navigator.pushNamed(context, LoginPage.routeName);
                 })
           ],

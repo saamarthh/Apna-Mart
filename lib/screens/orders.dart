@@ -164,7 +164,7 @@ class _OrdersPageState extends State<OrdersPage> {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [Text('Taxes :'), Text('2.50')],
+                            children: [Text('Delivery Fee :'), Text('10')],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
