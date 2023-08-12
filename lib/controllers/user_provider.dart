@@ -92,4 +92,15 @@ class UserProvider extends ChangeNotifier {
       print(error);
     }
   }
+
+  Future<void> updateToReturningUser(String docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(docId)
+          .update({'isFirstTime': false});
+    } catch (error) {
+      print(error);
+    }
+  }
 }

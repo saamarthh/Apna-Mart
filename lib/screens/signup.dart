@@ -82,7 +82,9 @@ class _SignupState extends State<Signup> {
                                   'address2': address2Controller.text,
                                   'pinCode': pinCodeController.text,
                                   'phoneNumber': userProviderModel
-                                      .userCredential.user!.phoneNumber
+                                      .userCredential.user!.phoneNumber,
+                                  'isFirstTime': true,
+                                  'loyaltyPoints': 0,
                                 };
                                 userProviderModel.addUser(userid, body);
                                 showSnackBar(

@@ -180,7 +180,13 @@ class _CartPageState extends State<CartPage> {
                       onPressed: () {
                         OrderProvider().addOrders(userController.user,
                             controller.cartProducts, controller.totalCost);
-                        if(!userController.user.isFirstTime) userController.updateLoyaltyPoints(userController.user.loyaltyPoints + controller.totalCost*0.01, userController.user.uid);
+                        userController.user.isFirstTime
+                            ? userController
+                                .updateToReturningUser(userController.user.uid)
+                            : userController.updateLoyaltyPoints(
+                                userController.user.loyaltyPoints +
+                                    controller.totalCost * 0.01,
+                                userController.user.uid);
                         Navigator.pushReplacementNamed(
                             context, OrderConfirmPage.routeName);
                       },
