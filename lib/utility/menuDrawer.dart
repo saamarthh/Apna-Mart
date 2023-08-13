@@ -1,4 +1,4 @@
-import 'package:apna_mart/controllers/models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/screens/loginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,11 @@ class MenuDrawer extends StatelessWidget {
                       style: TextStyle(fontSize: 14, color: Colors.grey)),
                   Text(
                       "Home Address: ${userProvider.user.address1} ${userProvider.user.address2} - ${userProvider.user.pinCode}",
-                      style: TextStyle(fontSize: 14, color: Colors.grey))
+                      style: TextStyle(fontSize: 14, color: Colors.grey)),
+                  Text(
+                      "Your Loyalty Points: ${userProvider.user.loyaltyPoints}",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14))
                 ],
               ),
             ),
@@ -90,14 +94,10 @@ class MenuDrawer extends StatelessWidget {
                 onTap: () async {
                   await FirebaseAuthMethod(FirebaseAuth.instance)
                       .signOut(context);
-                  userProvider.user = UserModal(
-                      name: '',
-                      address1: '',
-                      address2: '',
-                      phoneNumber: '',
-                      uid: '',
-                      pinCode: '');
-                  Navigator.pushNamed(context, LoginPage.routeName);
+                  final SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  await pref.remove('uid');
+                  Navigator.pushReplacementNamed(context, LoginPage.routeName);
                 })
           ],
         ),

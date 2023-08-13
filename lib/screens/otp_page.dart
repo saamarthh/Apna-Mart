@@ -1,8 +1,13 @@
-import 'package:apna_mart/screens/dashboard.dart';
+import 'package:apna_mart/controllers/user_provider.dart';
+import 'package:apna_mart/main.dart';
+
+import 'package:apna_mart/screens/loadDashboard.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OtpPage extends StatefulWidget {
@@ -19,11 +24,23 @@ class _OtpPageState extends State<OtpPage> {
   final TextEditingController _fourthController = TextEditingController();
   final TextEditingController _fifthController = TextEditingController();
   final TextEditingController _sixthController = TextEditingController();
+  UserProvider userController = UserProvider();
 
   String? otpCode;
   final String verificationId = Get.arguments[0];
   // final String verificationId = "testing";
   FirebaseAuth auth = FirebaseAuth.instance;
+  late SharedPreferences pref;
+  void sharedPreference() async {
+    pref = await SharedPreferences.getInstance();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    sharedPreference();
+  }
 
   @override
   void dispose() {
@@ -45,10 +62,17 @@ class _OtpPageState extends State<OtpPage> {
       PhoneAuthCredential creds = PhoneAuthProvider.credential(
           verificationId: verificationId, smsCode: userOtp);
       User? user = (await auth.signInWithCredential(creds)).user;
+
       if (user != null) {
-        SharedPreferences pref = await SharedPreferences.getInstance();
-        pref.setString("uid", user.uid);
-        Get.to(Dashboard());
+        print(user.uid);
+        await pref.setString("uid", user.uid);
+
+        print(pref.getString("uid")!);
+        setState(() {
+          userid = pref.getString("uid");
+        });
+        print(userid!);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoadingDashboard(uid: user.uid, phoneNumber: user.phoneNumber)));
       }
     } on FirebaseAuthException catch (e) {
       Get.snackbar(

@@ -91,13 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 hideText: false,
               ),
               const SizedBox(height: 20),
-              TextInput(
-                userInput: address3Controller,
-                hintTitle: 'Address Line 3',
-                keyboardType: TextInputType.streetAddress,
-                hideText: false,
-              ),
-              const SizedBox(height: 20),
+
               TextInput(
                 userInput: pincodeController,
                 hintTitle: 'Pincode',

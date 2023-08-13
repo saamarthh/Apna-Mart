@@ -44,7 +44,7 @@ class ProductProvider with ChangeNotifier {
     try {
       final List<Product> loadedProduct = [];
       final QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('products').get();
+          await FirebaseFirestore.instance.collection('products').where('quantity', isEqualTo: 1).get();
       snapshot.docs.forEach((doc) {
         loadedProduct.add(
           Product(
@@ -54,6 +54,7 @@ class ProductProvider with ChangeNotifier {
             price: doc['price'],
             image: doc['image'],
             category: doc['category'],
+            mrp: doc['mrp']
           ),
         );
       });
@@ -85,7 +86,7 @@ class ProductProvider with ChangeNotifier {
     try {
       final List<Product> loadedProduct = [];
       final QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('products').where('category', isEqualTo: category).get();
+          await FirebaseFirestore.instance.collection('products').where('category', isEqualTo: category).where('quantity', isEqualTo: 1).get();
       snapshot.docs.forEach((doc) {
         loadedProduct.add(
           Product(
@@ -95,6 +96,7 @@ class ProductProvider with ChangeNotifier {
             price: doc['price'],
             image: doc['image'],
             category: doc['category'],
+            mrp: doc['mrp']
           ),
         );
       });
@@ -131,7 +133,8 @@ class ProductProvider with ChangeNotifier {
               quantity: doc['quantity'],
               price: doc['price'],
               image: doc['image'],
-              category: doc['category']),
+              category: doc['category'],
+              mrp: doc['mrp']),
         );
       });
       _cartProducts = loadedProduct;

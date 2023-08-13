@@ -1,6 +1,7 @@
 import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/dashboard.dart';
+import 'package:apna_mart/screens/loadDashboard.dart';
 import 'package:apna_mart/screens/loginPage.dart';
 import 'package:apna_mart/screens/nodelivery.dart';
 import 'package:apna_mart/screens/orders.dart';
@@ -17,19 +18,20 @@ import 'package:apna_mart/screens/orderConfirmation.dart';
 import 'screens/welcome.dart';
 
 String? userid;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  UserProvider userProvider = UserProvider();
+  ProductProvider productProvider = ProductProvider();
   userid = prefs.getString('uid');
   runApp(MyApp(userid));
 }
 
 class MyApp extends StatefulWidget {
-  final String? userid;
-  const MyApp(this.userid, {Key? key}) : super(key: key);
+  final String? userData;
+  const MyApp(this.userData, {Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -62,6 +64,7 @@ class _MyAppState extends State<MyApp> {
           DeliveryUnavailableScreen.routeName: (context) =>
               DeliveryUnavailableScreen(),
           OtpPage.routeName: (context) => OtpPage(),
+          LoadingDashboard.routeName: (context) => LoadingDashboard(),
         },
       ),
     );

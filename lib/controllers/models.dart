@@ -7,6 +7,7 @@ class Product {
   int quantity;
   int price;
   String category;
+  int mrp;
 
   Product({
     required this.id,
@@ -15,6 +16,7 @@ class Product {
     required this.quantity,
     required this.price,
     required this.category,
+    required this.mrp
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +27,7 @@ class Product {
       'price': price,
       'image': image,
       'category': category,
+      'mrp': mrp,
     };
   }
 
@@ -35,7 +38,8 @@ class Product {
         image: map['image'],
         quantity: map['quantity'],
         price: map['price'],
-        category: map['category']);
+        category: map['category'],
+        mrp: map['mrp']);
   }
 }
 
@@ -47,6 +51,8 @@ class UserModal {
   String address2;
   String phoneNumber;
   String pinCode;
+  bool isFirstTime;
+  num loyaltyPoints;
 
   UserModal(
       {required this.name,
@@ -54,7 +60,9 @@ class UserModal {
       required this.address2,
       required this.phoneNumber,
       required this.uid,
-      required this.pinCode});
+      required this.pinCode,
+      required this.isFirstTime,
+      required this.loyaltyPoints});
 
   Map<String, dynamic> toMap() {
     return {
@@ -63,7 +71,9 @@ class UserModal {
       'address1': address1,
       'address2': address2,
       'phoneNumber': phoneNumber,
-      'pinCode': pinCode
+      'pinCode': pinCode,
+      'isFirstTime': isFirstTime,
+      'loyaltyPoints': loyaltyPoints
     };
   }
 
@@ -74,7 +84,9 @@ class UserModal {
         address1: map['address1'],
         address2: map['address2'],
         phoneNumber: map['phoneNumber'],
-        pinCode: map['pinCode']);
+        pinCode: map['pinCode'],
+        isFirstTime: map['isFirstTime'],
+        loyaltyPoints: map['loyaltyPoints']);
   }
 }
 
@@ -119,16 +131,17 @@ class Orders {
 
   factory Orders.fromMap(Map<String, dynamic> map) {
     return Orders(
-        productName: map['productName'],
-        customerName: map['customerName'],
-        quantity: map['quantity'],
-        totalCost: map['totalCost'],
-        address: map['address'],
-        phoneNumber: map['phoneNumber'],
-        productCost: map['productCost'],
-        orderId: map['orderId'],
-        dateTime: map['date'],
-        orderStatus: map['orderStatus'],);
+      productName: map['productName'],
+      customerName: map['customerName'],
+      quantity: map['quantity'],
+      totalCost: map['totalCost'],
+      address: map['address'],
+      phoneNumber: map['phoneNumber'],
+      productCost: map['productCost'],
+      orderId: map['orderId'],
+      dateTime: map['date'],
+      orderStatus: map['orderStatus'],
+    );
   }
 }
 
