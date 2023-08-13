@@ -3,6 +3,7 @@ import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/categoryDashboard.dart';
 import 'package:apna_mart/utility/loading.dart';
 import 'package:apna_mart/utility/menuDrawer.dart';
+import 'package:apna_mart/widgets/freedom_sale_card.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
 import 'package:provider/provider.dart';
@@ -117,208 +118,214 @@ class _DashboardState extends State<Dashboard> {
     providerController = controller;
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
-    return distanceInKm > 10
-        ? DeliveryUnavailableScreen()
-        : user.name.isEmpty
-            ? LoadingScreen()
-            : Scaffold(
-                drawer: const MenuDrawer(),
-                appBar: AppBar(
-                  title: Text(
-                    'Hello ${userController.user.name} 👋',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  ),
-                  actions: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.search_rounded),
-                      color: Colors.white,
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, CartPage.routeName);
-                      },
-                      icon: Icon(Icons.shopping_cart),
-                      color: Colors.white,
-                    ),
-                  ],
-                  backgroundColor: Color(0xff005acd),
-                ),
-                body: Container(
-                  decoration: BoxDecoration(color: Colors.white),
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 8, top: 8, bottom: 8),
-                              child: Text(
-                                "SHOP BY CATEGORY",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(3.0),
-                              child: GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                  ),
-                                  itemCount: controller.category.length,
-                                  itemBuilder: ((context, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CategoryDashboard(
-                                                  categoryName: controller
-                                                      .category[index]
-                                                      .categoryName,
-                                                ),
-                                              ));
-                                        },
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                                width: 50,
-                                                height: 50,
-                                                child: Image.network(controller
-                                                    .category[index]
-                                                    .categoryImage)),
-                                            Center(
-                                              child: Text(
-                                                "${controller.category[index].categoryName}",
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.black),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  })),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 8, top: 8, bottom: 8),
-                              child: Text(
-                                "OUR PRODUCTS",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(3.0),
-                              child: GridView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                ),
-                                itemCount: controller.products.length,
-                                itemBuilder: ((context, index) {
-                                  Product cartItem = controller.products[index];
-                                  // bool addDisabled = false;
-                                  return ProductTile(
-                                    product: cartItem,
-                                    // addDisabled: addDisabled,
-                                    ontap: () {
-                                      // setState(() {
-                                      //   addDisabled = true;
-                                      // });
-                                      controller.cartProducts.add(cartItem);
-                                      controller.totalPrice();
-                                      var snackBar = SnackBar(
-                                        content: Text(
-                                            'Added to Cart! Click 🛒 to update your order'),
-                                        duration: Duration(seconds: 1),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                    },
-                                  );
-                                }),
-                              ),
-                            ),
-                          ],
-                        ),
+    return Consumer<UserProvider>(
+        builder: ((context, userProviderModel, child) => distanceInKm < 10
+            ? DeliveryUnavailableScreen()
+            : userid != ''
+                ? LoadingScreen()
+                : Scaffold(
+                    drawer: const MenuDrawer(),
+                    appBar: AppBar(
+                      title: Text(
+                        'Hello ${userController.user.name} 👋',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
                       ),
-                      controller.totalCost != 0
-                          ? Container(
-                              color: Colors.orange,
-                              width: double.infinity,
-                              height: 60,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Total',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 10),
-                                            ),
-                                            Text(
-                                              'Rs. ${controller.totalCost}',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15),
-                                            )
-                                          ],
-                                        ),
+                      actions: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.search_rounded),
+                          color: Colors.white,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, CartPage.routeName);
+                          },
+                          icon: Icon(Icons.shopping_cart),
+                          color: Colors.white,
+                        ),
+                      ],
+                      backgroundColor: Color(0xff005acd),
+                    ),
+                    body: Container(
+                      decoration: BoxDecoration(color: Colors.white),
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FreedomSaleCard(),
+                          Expanded(
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, top: 8, bottom: 8),
+                                  child: Text(
+                                    "SHOP BY CATEGORY",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: GridView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
                                       ),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, CartPage.routeName);
-                                          },
-                                          child: Text("View Cart",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold)))
-                                    ]),
-                              ),
-                            )
-                          : SizedBox()
-                    ],
-                  ),
-                ),
-              );
+                                      itemCount: controller.category.length,
+                                      itemBuilder: ((context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(3.0),
+                                          child: TextButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CategoryDashboard(
+                                                      categoryName: controller
+                                                          .category[index]
+                                                          .categoryName,
+                                                    ),
+                                                  ));
+                                            },
+                                            child: Column(
+                                              children: [
+                                                SizedBox(
+                                                    width: 50,
+                                                    height: 50,
+                                                    child: Image.network(
+                                                        controller
+                                                            .category[index]
+                                                            .categoryImage)),
+                                                Center(
+                                                  child: Text(
+                                                    "${controller.category[index].categoryName}",
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.black),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      })),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, top: 8, bottom: 8),
+                                  child: Text(
+                                    "OUR PRODUCTS",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                    ),
+                                    itemCount: controller.products.length,
+                                    itemBuilder: ((context, index) {
+                                      Product cartItem =
+                                          controller.products[index];
+                                      // bool addDisabled = false;
+                                      return ProductTile(
+                                        product: cartItem,
+                                        // addDisabled: addDisabled,
+                                        ontap: () {
+                                          // setState(() {
+                                          //   addDisabled = true;
+                                          // });
+                                          controller.cartProducts.add(cartItem);
+                                          controller.totalPrice();
+                                          var snackBar = SnackBar(
+                                            content: Text(
+                                                'Added to Cart! Click 🛒 to update your order'),
+                                            duration: Duration(seconds: 1),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar);
+                                        },
+                                      );
+                                    }),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          controller.totalCost != 0
+                              ? Container(
+                                  color: Colors.orange,
+                                  width: double.infinity,
+                                  height: 60,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Total',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 10),
+                                                ),
+                                                Text(
+                                                  'Rs. ${controller.totalCost}',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 15),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pushNamed(context,
+                                                    CartPage.routeName);
+                                              },
+                                              child: Text("View Cart",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold)))
+                                        ]),
+                                  ),
+                                )
+                              : SizedBox()
+                        ],
+                      ),
+                    ),
+                  )));
   }
 }
 

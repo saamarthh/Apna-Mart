@@ -15,6 +15,7 @@ import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/screens/orderConfirmation.dart';
 import 'screens/welcome.dart';
+
 String? userid;
 
 void main() async {
@@ -46,8 +47,9 @@ class _MyAppState extends State<MyApp> {
       child: GetMaterialApp(
         theme: ThemeData(fontFamily: 'Poppins'),
         debugShowCheckedModeBanner: false,
-        initialRoute:
-            userid == null ? WelcomeScreen.routeName : Dashboard.routeName,
+        // initialRoute:
+        //     userid == null ? WelcomeScreen.routeName : Dashboard.routeName,
+        initialRoute: Dashboard.routeName,
         routes: {
           WelcomeScreen.routeName: (context) => WelcomeScreen(),
           Dashboard.routeName: (context) => Dashboard(),
