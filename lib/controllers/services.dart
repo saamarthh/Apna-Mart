@@ -54,6 +54,7 @@ class ProductProvider with ChangeNotifier {
             price: doc['price'],
             image: doc['image'],
             category: doc['category'],
+            mrp: doc['mrp']
           ),
         );
       });
@@ -95,6 +96,7 @@ class ProductProvider with ChangeNotifier {
             price: doc['price'],
             image: doc['image'],
             category: doc['category'],
+            mrp: doc['mrp']
           ),
         );
       });
@@ -131,7 +133,8 @@ class ProductProvider with ChangeNotifier {
               quantity: doc['quantity'],
               price: doc['price'],
               image: doc['image'],
-              category: doc['category']),
+              category: doc['category'],
+              mrp: doc['mrp']),
         );
       });
       _cartProducts = loadedProduct;

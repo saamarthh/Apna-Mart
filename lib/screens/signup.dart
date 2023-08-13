@@ -7,8 +7,9 @@ import 'dashboard.dart';
 
 class Signup extends StatefulWidget {
   static const routeName = 'signup';
-
-  const Signup({super.key});
+  String? phoneNumber;
+  String? uid;
+  Signup({this.phoneNumber, this.uid});
 
   @override
   State<Signup> createState() => _SignupState();
@@ -66,32 +67,27 @@ class _SignupState extends State<Signup> {
                         hideText: false,
                       ),
                       ElevatedButton(
-                          onPressed: () {
-                                print(nameController.text);
-                                print(address1Controller.text);
-                                print(address2Controller.text);
-                                print(pinCodeController.text);
+                        onPressed: () {
+                          print(nameController.text);
+                          print(address1Controller.text);
+                          print(address2Controller.text);
+                          print(pinCodeController.text);
 
-                                String userid = userProviderModel
-                                      .userCredential.user!.uid;
-
-                                Map<String, dynamic> body = {
-                                  'uid': userid,
-                                  'name': nameController.text,
-                                  'address1': address1Controller.text,
-                                  'address2': address2Controller.text,
-                                  'pinCode': pinCodeController.text,
-                                  'phoneNumber': userProviderModel
-                                      .userCredential.user!.phoneNumber,
-                                  'isFirstTime': true,
-                                  'loyaltyPoints': 0,
-                                };
-                                userProviderModel.addUser(userid, body);
-                                showSnackBar(
-                                    context, 'User Added Successfully');
-                                Navigator.pushReplacementNamed(
-                                    context, Dashboard.routeName);
-                              },
+                          Map<String, dynamic> body = {
+                            'uid': widget.uid,
+                            'name': nameController.text,
+                            'address1': address1Controller.text,
+                            'address2': address2Controller.text,
+                            'pinCode': pinCodeController.text,
+                            'phoneNumber': widget.phoneNumber,
+                            'isFirstTime': true,
+                            'loyaltyPoints': 0,
+                          };
+                          userProviderModel.addUser(widget.uid!, body);
+                          showSnackBar(context, 'User Added Successfully');
+                          Navigator.pushReplacementNamed(
+                              context, Dashboard.routeName);
+                        },
                         child: const Text('Submit'),
                       ),
                     ],

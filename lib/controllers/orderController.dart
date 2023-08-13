@@ -6,6 +6,8 @@ import 'package:short_uuids/short_uuids.dart';
 class OrderProvider {
   List<List<Orders>> _products = [];
   List<List<Orders>> get products => _products;
+
+  
   void addOrders(
       UserModal user, List<Product> cartProducts, double totalPrice) async {
     try {

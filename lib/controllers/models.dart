@@ -7,6 +7,7 @@ class Product {
   int quantity;
   int price;
   String category;
+  int mrp;
 
   Product({
     required this.id,
@@ -15,6 +16,7 @@ class Product {
     required this.quantity,
     required this.price,
     required this.category,
+    required this.mrp
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +27,7 @@ class Product {
       'price': price,
       'image': image,
       'category': category,
+      'mrp': mrp,
     };
   }
 
@@ -35,7 +38,8 @@ class Product {
         image: map['image'],
         quantity: map['quantity'],
         price: map['price'],
-        category: map['category']);
+        category: map['category'],
+        mrp: map['mrp']);
   }
 }
 
@@ -48,7 +52,7 @@ class UserModal {
   String phoneNumber;
   String pinCode;
   bool isFirstTime;
-  double loyaltyPoints;
+  num loyaltyPoints;
 
   UserModal(
       {required this.name,

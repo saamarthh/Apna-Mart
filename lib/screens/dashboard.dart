@@ -3,21 +3,20 @@ import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/categoryDashboard.dart';
 import 'package:apna_mart/utility/loading.dart';
 import 'package:apna_mart/utility/menuDrawer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'nodelivery.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-var providerController;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({
+  Dashboard({
     super.key,
   });
 
@@ -30,7 +29,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   double distanceInKm = 0.0;
   final desiredLocation = LatLng(23.2992973, 85.2701807);
-  //Latitude: 28.6949376, Longitude: 77.1784704
+
   @override
   void initState() {
     super.initState();
@@ -93,39 +92,41 @@ class _DashboardState extends State<Dashboard> {
   Future<void> getUidFromSharedPreferences() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
-      userid = pref.getString('uid') ?? '';
+      userid = pref.getString('uid');
     });
-    fetchUserData(userid!);
-  }
-
-  Future<void> fetchUserData(String uid) async {
-    final userProviderModel = Provider.of<UserProvider>(context, listen: false);
-    await userProviderModel.fetchUser(uid);
-    print(userProviderModel.user.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProviderModel = Provider.of<UserProvider>(context);
-    final user = userProviderModel.user;
     var controller = Provider.of<ProductProvider>(context);
-    var userController = Provider.of<UserProvider>(context);
-    userController.fetchUser(userid!);
+    UserProvider userController = Provider.of<UserProvider>(context);
     controller.fetchCategory();
     controller.fetchProduct();
+    print(userid);
     controller.totalPrice();
-    providerController = controller;
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
     return distanceInKm > 10
         ? DeliveryUnavailableScreen()
-        : user.name.isEmpty
-            ? LoadingScreen()
-            : Scaffold(
+        : FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(userid)
+                .get(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return LoadingScreen();
+              }
+
+              Map<String, dynamic> map =
+                  snapshot.data!.data() as Map<String, dynamic>;
+              userController.setUser(map);
+
+              return Scaffold(
                 drawer: const MenuDrawer(),
                 appBar: AppBar(
                   title: Text(
-                    'Hello ${userController.user.name} 👋',
+                    'Hello ${userController.user.name}👋',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         color: Colors.white,
@@ -237,6 +238,7 @@ class _DashboardState extends State<Dashboard> {
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
+                                  mainAxisExtent: MediaQuery.sizeOf(context).height/3
                                 ),
                                 itemCount: controller.products.length,
                                 itemBuilder: ((context, index) {
@@ -319,6 +321,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ),
               );
+            });
   }
 }
 
@@ -332,6 +335,8 @@ class ProductTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: Container(
+        height: MediaQuery.sizeOf(context).height / 3,
+        width: MediaQuery.sizeOf(context).width / 2,
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(7),
@@ -347,66 +352,64 @@ class ProductTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                  height: 70,
-                  width: 70,
+                  height: 60,
+                  width: 60,
                   child: Image.network(
                     product.image,
+                    fit: BoxFit.contain,
                   )),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                CustomText(
-                  text: product.name,
-                  size: 18,
-                  weight: FontWeight.w300,
+                Center(
+                  child: CustomText(
+                    text: "${product.name} (MRP: ${product.mrp})",
+                    size: 12,
+                    weight: FontWeight.w300,
+                  ),
                 ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
+                SizedBox(height: 5),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: CustomText(
-                        text: "Rs.${product.price}",
-                        size: 22,
-                        weight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: CustomText(
+                            text: "Our price:",
+                            size: 17,
+                            weight: FontWeight.bold,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: CustomText(
+                            text: "Rs.${product.price}",
+                            size: 17,
+                            weight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: 30,
-                    ),
-                    // addDisabled ? Container(
-                    //     decoration: BoxDecoration(
-                    //         color: Colors.white,
-                    //         borderRadius: BorderRadius.circular(3),
-                    //         border: Border.all(color: Colors.orange)),
-
-                    //     child: Padding(
-                    //       padding: const EdgeInsets.symmetric(
-                    //           vertical: 5.0, horizontal: 8),
-                    //       child: Text(
-                    //         "Added",
-                    //         style: TextStyle(
-                    //             color: Colors.orange,
-                    //             fontWeight: FontWeight.bold),
-                    //       ),
-                    //     ),
                     TextButton(
                       child: Container(
+                        width: double.infinity,
                         decoration: BoxDecoration(
                             color: Colors.orange,
                             borderRadius: BorderRadius.circular(3)),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 5.0, horizontal: 8),
-                          child: Text(
-                            "Add",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                          child: Center(
+                            child: Text(
+                              "Add",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ),

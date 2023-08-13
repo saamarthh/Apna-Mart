@@ -7,18 +7,14 @@ import 'package:apna_mart/controllers/models.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-var providerController;
-
 class CategoryDashboard extends StatefulWidget {
-
   String categoryName;
   CategoryDashboard({super.key, required this.categoryName});
 
   static const routeName = 'category-dashboard';
-
-  
 
   @override
   State<CategoryDashboard> createState() => _CategoryDashboardState();
@@ -28,35 +24,35 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
   @override
   void initState() {
     super.initState();
-    getUidFromSharedPreferences();
   }
 
   Future<void> getUidFromSharedPreferences() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
-      userid = pref.getString('uid') ?? '';
+      userid = pref.getString('uid');
     });
-    fetchUserData(userid!);
-  }
-
-  Future<void> fetchUserData(String uid) async {
-    final userProviderModel = Provider.of<UserProvider>(context, listen: false);
-    await userProviderModel.fetchUser(uid);
-    print(userProviderModel.user.name);
   }
 
   @override
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
-    userController.fetchUser(userid!);
     controller.fetchCategoryProduct(widget.categoryName);
     controller.totalPrice();
-    providerController = controller;
+
     final scaffoldKey = GlobalKey<ScaffoldState>();
-    return userController.user.name == '' || controller.categoryProducts.length == 0
-        ? LoadingScreen()
-        : Scaffold(
+    return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        future:
+            FirebaseFirestore.instance.collection('users').doc(userid).get(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || controller.categoryProducts.length == 0) {
+            return LoadingScreen();
+          }
+
+          Map<String, dynamic> map =
+              snapshot.data!.data() as Map<String, dynamic>;
+          userController.setUser(map);
+          return Scaffold(
             drawer: const MenuDrawer(),
             appBar: AppBar(
               title: Text(
@@ -69,8 +65,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   icon: Icon(Icons.search_rounded),
                   color: Colors.white,
                 ),
@@ -91,7 +86,13 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
-                    child: Text("OUR ${widget.categoryName.toUpperCase()} COLLECTION", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),),
+                    child: Text(
+                      "OUR ${widget.categoryName.toUpperCase()} COLLECTION",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
                   ),
                   Expanded(
                     child: ListView(
@@ -101,12 +102,14 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                           child: GridView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                             ),
                             itemCount: controller.categoryProducts.length,
                             itemBuilder: ((context, index) {
-                              Product cartItem = controller.categoryProducts[index];
+                              Product cartItem =
+                                  controller.categoryProducts[index];
                               return ProductTile(
                                 product: cartItem,
                                 ontap: () {
@@ -179,6 +182,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               ),
             ),
           );
+        });
   }
 }
 
@@ -237,15 +241,24 @@ class ProductTile extends StatelessWidget {
                     SizedBox(
                       width: 30,
                     ),
-                    TextButton(child: Container(
-                      decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(3)),
-                      
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8),
-                        child: Text("Add", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    TextButton(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.orange,
+                            borderRadius: BorderRadius.circular(3)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5.0, horizontal: 8),
+                          child: Text(
+                            "Add",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
-                    ),
-                    onPressed: ontap,)
+                      onPressed: ontap,
+                    )
                   ],
                 ),
               ],

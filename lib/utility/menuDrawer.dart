@@ -1,4 +1,4 @@
-import 'package:apna_mart/controllers/models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/screens/loginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -94,16 +94,10 @@ class MenuDrawer extends StatelessWidget {
                 onTap: () async {
                   await FirebaseAuthMethod(FirebaseAuth.instance)
                       .signOut(context);
-                  userProvider.user = UserModal(
-                      name: '',
-                      address1: '',
-                      address2: '',
-                      phoneNumber: '',
-                      uid: '',
-                      pinCode: '',
-                      isFirstTime: true,
-                      loyaltyPoints: 0);
-                  Navigator.pushNamed(context, LoginPage.routeName);
+                  final SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  await pref.remove('uid');
+                  Navigator.pushReplacementNamed(context, LoginPage.routeName);
                 })
           ],
         ),

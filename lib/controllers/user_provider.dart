@@ -1,21 +1,26 @@
 import 'package:apna_mart/controllers/models.dart';
-import 'package:apna_mart/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProvider extends ChangeNotifier {
   late UserCredential userCredential;
-  UserModal user = UserModal(
-      name: '',
-      address1: '',
-      address2: '',
-      phoneNumber: '',
-      uid: '',
-      pinCode: '',
-      isFirstTime: true,
-      loyaltyPoints: 0);
-  String uid = '';
+  UserModal? _user;
+
+  UserModal get user => _user!;
+
+  void setUser(Map<String, dynamic> data) {
+    _user = UserModal(
+        name: data['name'],
+        uid: data['uid'],
+        phoneNumber: data['phoneNumber'],
+        address1: data['address1'],
+        address2: data['address2'],
+        pinCode: data['pinCode'],
+        isFirstTime: data['isFirstTime'],
+        loyaltyPoints: data['loyaltyPoints']);
+    notifyListeners();
+  }
 
   void setUserCredential(UserCredential userCredential) {
     this.userCredential = userCredential;
@@ -24,15 +29,6 @@ class UserProvider extends ChangeNotifier {
 
   UserCredential getUserCredential() {
     return userCredential;
-  }
-
-  String getUserUid() {
-    return this.uid;
-  }
-
-  void setUid(String uid) {
-    this.uid = uid == '' ? userid! : uid;
-    notifyListeners();
   }
 
   Future<void> fetchUser(String userid) async {
@@ -45,7 +41,7 @@ class UserProvider extends ChangeNotifier {
 
       final data = snapshot.data()!;
 
-      this.user = UserModal(
+      _user = UserModal(
           name: data['name'],
           uid: userid,
           phoneNumber: data['phoneNumber'],
@@ -66,7 +62,7 @@ class UserProvider extends ChangeNotifier {
           .collection('users')
           .doc(userid)
           .set(user);
-      this.user = UserModal(
+      _user = UserModal(
           name: user['name'],
           address1: user['address1'],
           address2: user['address2'],
@@ -75,7 +71,6 @@ class UserProvider extends ChangeNotifier {
           pinCode: user['pinCode'],
           isFirstTime: user['isFirstTime'],
           loyaltyPoints: user['loyaltyPoints']);
-      this.uid = userid;
       notifyListeners();
     } catch (error) {
       print(error);
