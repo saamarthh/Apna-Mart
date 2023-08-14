@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:short_uuids/short_uuids.dart';
 
-class OrderProvider {
+class OrderProvider with ChangeNotifier {
   List<List<Orders>> _products = [];
   List<List<Orders>> get products => _products;
 
@@ -85,7 +86,7 @@ class OrderProvider {
       _products = orderList;
       print(orderList.length);
       print(_products.length);
-      // notifyListeners();
+      notifyListeners();
     } catch (error) {
       print(error);
     }

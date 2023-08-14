@@ -10,6 +10,7 @@ import 'package:apna_mart/main.dart';
 import 'package:provider/provider.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:apna_mart/utility/loading.dart';
+import 'package:apna_mart/controllers/models.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -34,9 +35,13 @@ class _OrdersPageState extends State<OrdersPage> {
   void initState() {
     super.initState();
     getuserid();
-    orderProvider.fetchOrders(userid!);
+    getOrders();
   }
 
+  void getOrders() async {
+    orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    await orderProvider.fetchOrders(userid!);
+  }
 
   @override
   void dispose() {
@@ -46,7 +51,6 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build(BuildContext context) {
     var userController = Provider.of<UserProvider>(context);
-
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future:
             FirebaseFirestore.instance.collection('users').doc(userid).get(),
@@ -58,6 +62,9 @@ class _OrdersPageState extends State<OrdersPage> {
           Map<String, dynamic> map =
               snapshot.data!.data() as Map<String, dynamic>;
           userController.setUser(map);
+          int length = orderProvider.products.length;
+          setState(() {});
+
           return Scaffold(
             drawer: const MenuDrawer(),
             appBar: AppBar(
@@ -80,7 +87,7 @@ class _OrdersPageState extends State<OrdersPage> {
               ],
               backgroundColor: Color(0xff005acd),
             ),
-            body: orderProvider.products.length == 0
+            body: length == 0
                 ? Container(
                     color: Colors.white,
                     child: Center(

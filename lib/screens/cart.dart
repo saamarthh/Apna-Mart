@@ -110,10 +110,18 @@ class _CartPageState extends State<CartPage> {
                                     controller.cartProducts.removeAt(index);
                                   },
                                   increaseCount: () {
-                                    controller.increaseQuantity(index);
+                                    setState(() {
+                                      controller.increaseQuantity(index);
+                                      controller.totalPrice();
+                                      totalCost = controller.totalCost;
+                                    });
                                   },
                                   decreaseCount: () {
-                                    controller.decreaseQuantity(index);
+                                    setState(() {
+                                      controller.decreaseQuantity(index);
+                                      controller.totalPrice();
+                                      totalCost = controller.totalCost;
+                                    });
                                   });
                             },
                           ),
@@ -133,8 +141,7 @@ class _CartPageState extends State<CartPage> {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 14.0),
                             child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   mainAxisAlignment:
@@ -177,10 +184,9 @@ class _CartPageState extends State<CartPage> {
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black),
-                                    ),               
+                                    ),
                                   ],
                                 ),
-                                
                               ],
                             ),
                           ),

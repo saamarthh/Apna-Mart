@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
+import 'package:apna_mart/controllers/orderController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/screens/orderConfirmation.dart';
 import 'screens/welcome.dart';
@@ -24,7 +25,6 @@ void main() async {
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   UserProvider userProvider = UserProvider();
-  ProductProvider productProvider = ProductProvider();
   userid = prefs.getString('uid');
   runApp(MyApp(userid));
 }
@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (context) => ProductProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
-        // ChangeNotifierProvider(create: (context) => OrderProvider()),
+        ChangeNotifierProvider(create: (context) => OrderProvider()),
       ],
       child: GetMaterialApp(
         theme: ThemeData(fontFamily: 'Poppins'),

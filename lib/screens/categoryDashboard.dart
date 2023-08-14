@@ -37,8 +37,13 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
-    controller.fetchCategoryProduct(widget.categoryName);
-    controller.totalPrice();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchCategoryProduct(widget.categoryName);
+      controller.totalPrice();
+    });
+    int length = controller.cartProducts.length;
+    num totalprice = controller.totalCost;
+    setState(() {});
 
     final scaffoldKey = GlobalKey<ScaffoldState>();
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -69,12 +74,32 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                   icon: Icon(Icons.search_rounded),
                   color: Colors.white,
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, CartPage.routeName);
-                  },
-                  icon: Icon(Icons.shopping_cart),
-                  color: Colors.white,
+                Stack(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, CartPage.routeName);
+                      },
+                      icon: Icon(Icons.shopping_cart),
+                      color: Colors.white,
+                    ),
+                    if (length != 0)
+                      Positioned(
+                        right: 12,
+                        bottom: 15,
+                        child: CircleAvatar(
+                          radius: 7,
+                          backgroundColor: Colors.red,
+                          child: Text(
+                            "${controller.cartProducts.length}",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 7,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                  ],
                 ),
               ],
               backgroundColor: Color(0xff005acd),
@@ -105,6 +130,10 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
+                                          mainAxisExtent:
+                                              MediaQuery.sizeOf(context)
+                                                      .height /
+                                                  3
                             ),
                             itemCount: controller.categoryProducts.length,
                             itemBuilder: ((context, index) {
@@ -113,8 +142,12 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                               return ProductTile(
                                 product: cartItem,
                                 ontap: () {
-                                  controller.cartProducts.add(cartItem);
-                                  controller.totalPrice();
+                                  setState(() {
+                                    controller.cartProducts.add(cartItem);
+                                    controller.totalPrice();
+                                    length = controller.cartProducts.length;
+                                    totalprice = controller.totalCost;
+                                  });
                                   var snackBar = SnackBar(
                                     content: Text(
                                         'Added to Cart! Click 🛒 to update your order'),
@@ -130,7 +163,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                       ],
                     ),
                   ),
-                  controller.totalCost != 0
+                  totalprice != 0
                       ? Container(
                           color: Colors.orange,
                           width: double.infinity,
@@ -189,12 +222,15 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
 class ProductTile extends StatelessWidget {
   final Product product;
   final Function() ontap;
+  // bool addDisabled = false;
   ProductTile({required this.product, required this.ontap});
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: Container(
+        height: MediaQuery.sizeOf(context).height / 3,
+        width: MediaQuery.sizeOf(context).width / 2,
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(7),
@@ -210,50 +246,64 @@ class ProductTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                  height: 70,
-                  width: 70,
+                  height: 60,
+                  width: 60,
                   child: Image.network(
                     product.image,
+                    fit: BoxFit.contain,
                   )),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                CustomText(
-                  text: product.name,
-                  size: 18,
-                  weight: FontWeight.w300,
+                Center(
+                  child: CustomText(
+                    text: "${product.name} (MRP: ${product.mrp_price})",
+                    size: 12,
+                    weight: FontWeight.w300,
+                  ),
                 ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
+                SizedBox(height: 5),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: CustomText(
-                        text: "Rs.${product.our_price}",
-                        size: 22,
-                        weight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 30,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: CustomText(
+                            text: "Our price:",
+                            size: 17,
+                            weight: FontWeight.bold,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: CustomText(
+                            text: "Rs.${product.our_price}",
+                            size: 17,
+                            weight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                     TextButton(
                       child: Container(
+                        width: double.infinity,
                         decoration: BoxDecoration(
                             color: Colors.orange,
                             borderRadius: BorderRadius.circular(3)),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 5.0, horizontal: 8),
-                          child: Text(
-                            "Add",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                          child: Center(
+                            child: Text(
+                              "Add",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ),

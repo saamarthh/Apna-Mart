@@ -99,12 +99,17 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    var controller = Provider.of<ProductProvider>(context);
+    ProductProvider controller = Provider.of<ProductProvider>(context);
     UserProvider userController = Provider.of<UserProvider>(context);
-    controller.fetchCategory();
-    controller.fetchProduct();
     print(userid);
-    controller.totalPrice();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchCategory();
+      controller.fetchProduct();
+      controller.totalPrice();
+    });
+    int length = controller.cartProducts.length;
+    num totalprice = controller.totalCost;
+    setState(() {});
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
     return distanceInKm > 10
@@ -149,16 +154,22 @@ class _DashboardState extends State<Dashboard> {
                           icon: Icon(Icons.shopping_cart),
                           color: Colors.white,
                         ),
-                        if(controller.cartProducts.length!=0)
-                        Positioned(
-                          right: 12,
-                          bottom: 15,
-                          child: CircleAvatar(
-                            radius: 7,
-                            backgroundColor: Colors.red,
-                            child: Text("${controller.cartProducts.length}", style: TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold),),
-                          ),
-                        )
+                        if (length != 0)
+                          Positioned(
+                            right: 12,
+                            bottom: 15,
+                            child: CircleAvatar(
+                              radius: 7,
+                              backgroundColor: Colors.red,
+                              child: Text(
+                                "${controller.cartProducts.length}",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 7,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          )
                       ],
                     ),
                   ],
@@ -271,11 +282,14 @@ class _DashboardState extends State<Dashboard> {
                                       product: cartItem,
                                       // addDisabled: addDisabled,
                                       ontap: () {
-                                        // setState(() {
-                                        //   addDisabled = true;
-                                        // });
-                                        controller.cartProducts.add(cartItem);
-                                        controller.totalPrice();
+                                        setState(() {
+                                          controller.cartProducts.add(cartItem);
+                                          controller.totalPrice();
+                                          length =
+                                              controller.cartProducts.length;
+                                          totalprice = controller.totalCost;
+                                        });
+
                                         var snackBar = SnackBar(
                                           content: Text(
                                               'Added to Cart! Click 🛒 to update your order'),
@@ -292,55 +306,53 @@ class _DashboardState extends State<Dashboard> {
                           ],
                         ),
                       ),
-                      controller.totalCost != 0
-                          ? Container(
-                              color: Colors.orange,
-                              width: double.infinity,
-                              height: 60,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Total',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 10),
-                                            ),
-                                            Text(
-                                              'Rs. ${controller.totalCost}',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15),
-                                            )
-                                          ],
+                      if (totalprice != 0)
+                        Container(
+                          color: Colors.orange,
+                          width: double.infinity,
+                          height: 60,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Total',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10),
                                         ),
-                                      ),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, CartPage.routeName);
-                                          },
-                                          child: Text("View Cart",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold)))
-                                    ]),
-                              ),
-                            )
-                          : SizedBox()
+                                        Text(
+                                          'Rs. ${controller.totalCost}',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, CartPage.routeName);
+                                      },
+                                      child: Text("View Cart",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold)))
+                                ]),
+                          ),
+                        )
                     ],
                   ),
                 ),

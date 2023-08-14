@@ -17,45 +17,24 @@ class ProductProvider with ChangeNotifier {
 
   double totalCost = 0;
 
-  // Create a new grocery item
-  Future<void> addToCart(Product product) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(product.id)
-          .set({
-        'id': product.id,
-        'image': product.image,
-        'productName': product.name,
-        'quantity': product.quantity,
-        'price': product.our_price,
-        'category': product.category,
-        // 'user': user.name,
-        // 'phoneNumber': user.phoneNumber,
-        // 'address': user.address,
-      });
-    } catch (error) {
-      print(error);
-    }
-  }
-
   // Read all grocery items from Firestore
   Future<void> fetchProduct() async {
     try {
       final List<Product> loadedProduct = [];
-      final QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('products').where('quantity', isEqualTo: 1).get();
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('products')
+          .where('quantity', isEqualTo: 1)
+          .get();
       snapshot.docs.forEach((doc) {
         loadedProduct.add(
           Product(
-            id: doc['id'],
-            name: doc['name'],
-            quantity: doc['quantity'],
-            our_price: doc['our_price'],
-            image: doc['image'],
-            category: doc['category'],
-            mrp_price: doc['mrp_price']
-          ),
+              id: doc['id'],
+              name: doc['name'],
+              quantity: doc['quantity'],
+              our_price: doc['our_price'],
+              image: doc['image'],
+              category: doc['category'],
+              mrp_price: doc['mrp_price']),
         );
       });
       _products = loadedProduct;
@@ -71,9 +50,9 @@ class ProductProvider with ChangeNotifier {
       final QuerySnapshot snapshot =
           await FirebaseFirestore.instance.collection('category').get();
       snapshot.docs.forEach((doc) {
-        loadedCategory.add(
-          Category(categoryName: doc['categoryName'], categoryImage: doc['categoryImage'])
-        );
+        loadedCategory.add(Category(
+            categoryName: doc['categoryName'],
+            categoryImage: doc['categoryImage']));
       });
       _category = loadedCategory;
       notifyListeners();
@@ -83,41 +62,44 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> fetchCategoryProduct(String category) async {
+    final List<Product> loadedProduct = [];
     try {
-      final List<Product> loadedProduct = [];
-      final QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('products').where('category', isEqualTo: category).where('quantity', isEqualTo: 1).get();
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('products')
+          .where('category', isEqualTo: category)
+          .where('quantity', isEqualTo: 1)
+          .get();
       snapshot.docs.forEach((doc) {
         loadedProduct.add(
           Product(
-            id: doc['id'],
-            name: doc['name'],
-            quantity: doc['quantity'],
-            our_price: doc['our_price'],
-            image: doc['image'],
-            category: doc['category'],
-            mrp_price: doc['mrp_price']
-          ),
+              id: doc['id'],
+              name: doc['name'],
+              quantity: doc['quantity'],
+              our_price: doc['our_price'],
+              image: doc['image'],
+              category: doc['category'],
+              mrp_price: doc['mrp_price']),
         );
       });
-      _categoryProducts= loadedProduct;
-      notifyListeners();
+      
     } catch (error) {
       print(error);
     }
+    _categoryProducts = loadedProduct;
+    notifyListeners();
   }
 
-  Future<void> totalPrice() async {
+  void totalPrice() {
+    double orderPrice = 0;
     try {
-      double orderPrice = 0;
       _cartProducts.forEach((item) {
         orderPrice += (item.our_price * item.quantity);
       });
-      totalCost = orderPrice;
-      notifyListeners();
     } catch (error) {
       print(error);
     }
+    totalCost = orderPrice;
+    notifyListeners();
   }
 
   Future<void> fetchCart() async {
@@ -150,17 +132,20 @@ class ProductProvider with ChangeNotifier {
   }
 
   void increaseQuantity(int index) {
-    _cartProducts[index].quantity += 1;
+    List<Product> tempCart = _cartProducts;
+    tempCart[index].quantity += 1;
+    _cartProducts = tempCart;
     notifyListeners();
   }
 
   void decreaseQuantity(int index) {
-    _cartProducts[index].quantity = _cartProducts[index].quantity <= 0
-        ? 0
-        : _cartProducts[index].quantity - 1;
-    if (_cartProducts[index].quantity == 0) {
-      _cartProducts.removeAt(index);
+    List<Product> tempCart = _cartProducts;
+    tempCart[index].quantity =
+        tempCart[index].quantity <= 0 ? 0 : tempCart[index].quantity - 1;
+    if (tempCart[index].quantity == 0) {
+      tempCart.removeAt(index);
     }
+    _cartProducts = tempCart;
     notifyListeners();
   }
 }
