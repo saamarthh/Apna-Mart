@@ -140,12 +140,26 @@ class _DashboardState extends State<Dashboard> {
                       icon: Icon(Icons.search_rounded),
                       color: Colors.white,
                     ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, CartPage.routeName);
-                      },
-                      icon: Icon(Icons.shopping_cart),
-                      color: Colors.white,
+                    Stack(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, CartPage.routeName);
+                          },
+                          icon: Icon(Icons.shopping_cart),
+                          color: Colors.white,
+                        ),
+                        if(controller.cartProducts.length!=0)
+                        Positioned(
+                          right: 12,
+                          bottom: 15,
+                          child: CircleAvatar(
+                            radius: 7,
+                            backgroundColor: Colors.red,
+                            child: Text("${controller.cartProducts.length}", style: TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold),),
+                          ),
+                        )
+                      ],
                     ),
                   ],
                   backgroundColor: Color(0xff005acd),
