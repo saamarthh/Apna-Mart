@@ -3,6 +3,7 @@ import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/categoryDashboard.dart';
 import 'package:apna_mart/utility/loading.dart';
 import 'package:apna_mart/utility/menuDrawer.dart';
+import 'package:apna_mart/widgets/freedom_sale_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:apna_mart/controllers/models.dart';
@@ -159,6 +160,7 @@ class _DashboardState extends State<Dashboard> {
                         child: ListView(
                           shrinkWrap: true,
                           children: [
+                            FreedomSaleCard(),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 8, top: 8, bottom: 8),
@@ -232,37 +234,45 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(3.0),
-                              child: GridView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisExtent: MediaQuery.sizeOf(context).height/3
+                              child: RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.fetchProduct();
+                                },
+                                child: GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          mainAxisExtent:
+                                              MediaQuery.sizeOf(context)
+                                                      .height /
+                                                  3),
+                                  itemCount: controller.products.length,
+                                  itemBuilder: ((context, index) {
+                                    Product cartItem =
+                                        controller.products[index];
+                                    // bool addDisabled = false;
+                                    return ProductTile(
+                                      product: cartItem,
+                                      // addDisabled: addDisabled,
+                                      ontap: () {
+                                        // setState(() {
+                                        //   addDisabled = true;
+                                        // });
+                                        controller.cartProducts.add(cartItem);
+                                        controller.totalPrice();
+                                        var snackBar = SnackBar(
+                                          content: Text(
+                                              'Added to Cart! Click 🛒 to update your order'),
+                                          duration: Duration(seconds: 1),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      },
+                                    );
+                                  }),
                                 ),
-                                itemCount: controller.products.length,
-                                itemBuilder: ((context, index) {
-                                  Product cartItem = controller.products[index];
-                                  // bool addDisabled = false;
-                                  return ProductTile(
-                                    product: cartItem,
-                                    // addDisabled: addDisabled,
-                                    ontap: () {
-                                      // setState(() {
-                                      //   addDisabled = true;
-                                      // });
-                                      controller.cartProducts.add(cartItem);
-                                      controller.totalPrice();
-                                      var snackBar = SnackBar(
-                                        content: Text(
-                                            'Added to Cart! Click 🛒 to update your order'),
-                                        duration: Duration(seconds: 1),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                    },
-                                  );
-                                }),
                               ),
                             ),
                           ],
@@ -364,7 +374,7 @@ class ProductTile extends StatelessWidget {
               children: [
                 Center(
                   child: CustomText(
-                    text: "${product.name} (MRP: ${product.mrp})",
+                    text: "${product.name} (MRP: ${product.mrp_price})",
                     size: 12,
                     weight: FontWeight.w300,
                   ),
@@ -387,7 +397,7 @@ class ProductTile extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: CustomText(
-                            text: "Rs.${product.price}",
+                            text: "Rs.${product.our_price}",
                             size: 17,
                             weight: FontWeight.bold,
                           ),

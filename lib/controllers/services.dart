@@ -28,7 +28,7 @@ class ProductProvider with ChangeNotifier {
         'image': product.image,
         'productName': product.name,
         'quantity': product.quantity,
-        'price': product.price,
+        'price': product.our_price,
         'category': product.category,
         // 'user': user.name,
         // 'phoneNumber': user.phoneNumber,
@@ -51,10 +51,10 @@ class ProductProvider with ChangeNotifier {
             id: doc['id'],
             name: doc['name'],
             quantity: doc['quantity'],
-            price: doc['price'],
+            our_price: doc['our_price'],
             image: doc['image'],
             category: doc['category'],
-            mrp: doc['mrp']
+            mrp_price: doc['mrp_price']
           ),
         );
       });
@@ -93,10 +93,10 @@ class ProductProvider with ChangeNotifier {
             id: doc['id'],
             name: doc['name'],
             quantity: doc['quantity'],
-            price: doc['price'],
+            our_price: doc['our_price'],
             image: doc['image'],
             category: doc['category'],
-            mrp: doc['mrp']
+            mrp_price: doc['mrp_price']
           ),
         );
       });
@@ -111,7 +111,7 @@ class ProductProvider with ChangeNotifier {
     try {
       double orderPrice = 0;
       _cartProducts.forEach((item) {
-        orderPrice += (item.price * item.quantity);
+        orderPrice += (item.our_price * item.quantity);
       });
       totalCost = orderPrice;
       notifyListeners();
@@ -131,10 +131,10 @@ class ProductProvider with ChangeNotifier {
               id: doc['id'],
               name: doc['productName'],
               quantity: doc['quantity'],
-              price: doc['price'],
+              our_price: doc['our_price'],
               image: doc['image'],
               category: doc['category'],
-              mrp: doc['mrp']),
+              mrp_price: doc['mrp_price']),
         );
       });
       _cartProducts = loadedProduct;

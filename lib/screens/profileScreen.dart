@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/utility/loginButton.dart';
 
+import 'dashboard.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
   static const routeName = 'profile';
@@ -91,7 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 hideText: false,
               ),
               const SizedBox(height: 20),
-
               TextInput(
                 userInput: pincodeController,
                 hintTitle: 'Pincode',
@@ -99,7 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 hideText: false,
               ),
               LoginButton(
-                    txt: 'Update', color: Color(0xff005acd), onPressed: () async {
+                txt: 'Update',
+                color: Color(0xff005acd),
+                onPressed: () async {
                   print(nameController.text);
                   print(address1Controller.text);
                   print(address2Controller.text);
@@ -110,15 +113,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'name': nameController.text,
                     'address1': address1Controller.text,
                     'address2': address2Controller.text,
-                    'address3': address3Controller.text,
                     'phoneNumber': userData['phoneNumber']
                   };
 
-                  userProviderModel.addUser(userid!, body);
+                  // userProviderModel.addUser(userid!, body);
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(userid)
+                      .update(body);                 
                   showSnackBar(context, 'Details updated Successfully!');
-                  Navigator.pop(context);
-                },),
-              
+                  Navigator.pushReplacementNamed(context, Dashboard.routeName);
+                },
+              ),
             ],
           ),
         ),

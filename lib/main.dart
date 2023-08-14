@@ -49,9 +49,9 @@ class _MyAppState extends State<MyApp> {
       child: GetMaterialApp(
         theme: ThemeData(fontFamily: 'Poppins'),
         debugShowCheckedModeBanner: false,
-        // initialRoute:
-        //     userid == null ? WelcomeScreen.routeName : Dashboard.routeName,
-        initialRoute: Dashboard.routeName,
+        initialRoute:
+            userid == null ? WelcomeScreen.routeName : Dashboard.routeName,
+        // initialRoute: Dashboard.routeName,
         routes: {
           WelcomeScreen.routeName: (context) => WelcomeScreen(),
           Dashboard.routeName: (context) => Dashboard(),

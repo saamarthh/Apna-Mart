@@ -53,7 +53,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 height: 10,
               ),
               Text(
-                "APNA MART",
+                "Laddu Gopal",
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 50,

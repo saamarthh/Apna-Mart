@@ -20,7 +20,7 @@ class OrderProvider {
           'productName': item.name,
           'customerName': user.name,
           'quantity': item.quantity,
-          'productCost': item.price * item.quantity,
+          'productCost': item.our_price * item.quantity,
           'totalCost': totalPrice,
           'phoneNumber': user.phoneNumber,
           'address': '${user.address1} ${user.address2} - ${user.pinCode}',

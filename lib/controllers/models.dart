@@ -5,18 +5,18 @@ class Product {
   String image;
   String name;
   int quantity;
-  int price;
+  int our_price;
   String category;
-  int mrp;
+  int mrp_price;
 
   Product({
     required this.id,
     required this.name,
     required this.image,
     required this.quantity,
-    required this.price,
+    required this.our_price,
     required this.category,
-    required this.mrp
+    required this.mrp_price,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,10 +24,10 @@ class Product {
       'id': id,
       'name': name,
       'quantity': quantity,
-      'price': price,
+      'our_price': our_price,
       'image': image,
       'category': category,
-      'mrp': mrp,
+      'mrp_price': mrp_price,
     };
   }
 
@@ -37,9 +37,9 @@ class Product {
         name: map['name'],
         image: map['image'],
         quantity: map['quantity'],
-        price: map['price'],
+        our_price: map['our_price'],
         category: map['category'],
-        mrp: map['mrp']);
+        mrp_price: map['mrp_price']);
   }
 }
 

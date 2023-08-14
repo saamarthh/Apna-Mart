@@ -292,7 +292,7 @@ class CartTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(14),
               child: CustomText(
-                text: "Rs.${product.price * product.quantity}",
+                text: "Rs.${product.our_price * product.quantity}",
                 size: 22,
                 weight: FontWeight.bold,
               ),
