@@ -8,7 +8,6 @@ class OrderProvider with ChangeNotifier {
   List<List<Orders>> _products = [];
   List<List<Orders>> get products => _products;
 
-  
   void addOrders(
       UserModal user, List<Product> cartProducts, double totalPrice) async {
     try {
@@ -64,9 +63,8 @@ class OrderProvider with ChangeNotifier {
             .doc(userid)
             .collection(doc['orderId'])
             .get();
-
+        int count = 0;
         orderSnapshot.docs.forEach((element) {
-          int count = 0;
           print(element.id);
           loadedProduct.add(Orders(
               productName: element['productName'],

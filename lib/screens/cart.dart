@@ -201,7 +201,7 @@ class _CartPageState extends State<CartPage> {
                               OrderProvider().addOrders(
                                   userController.user,
                                   controller.cartProducts,
-                                  controller.totalCost);
+                                  controller.totalCost+10);
                               userController.user.isFirstTime
                                   ? userController.updateToReturningUser(
                                       userController.user.uid)

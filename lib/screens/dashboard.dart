@@ -15,6 +15,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({
@@ -109,7 +110,6 @@ class _DashboardState extends State<Dashboard> {
     });
     int length = controller.cartProducts.length;
     num totalprice = controller.totalCost;
-    setState(() {});
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
     return distanceInKm > 10
@@ -228,9 +228,21 @@ class _DashboardState extends State<Dashboard> {
                                             SizedBox(
                                                 width: 50,
                                                 height: 50,
-                                                child: Image.network(controller
-                                                    .category[index]
-                                                    .categoryImage)),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: controller
+                                                      .category[index]
+                                                      .categoryImage,
+                                                  progressIndicatorBuilder: (context,
+                                                          url,
+                                                          downloadProgress) =>
+                                                      CircularProgressIndicator(
+                                                          value:
+                                                              downloadProgress
+                                                                  .progress),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                )),
                                             Center(
                                               child: Text(
                                                 "${controller.category[index].categoryName}",
@@ -388,12 +400,16 @@ class ProductTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                  height: 60,
-                  width: 60,
-                  child: Image.network(
-                    product.image,
-                    fit: BoxFit.contain,
-                  )),
+                height: 60,
+                width: 60,
+                child: CachedNetworkImage(
+                  imageUrl: product.image,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
+              ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,

@@ -43,7 +43,6 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
     });
     int length = controller.cartProducts.length;
     num totalprice = controller.totalCost;
-    setState(() {});
 
     final scaffoldKey = GlobalKey<ScaffoldState>();
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(

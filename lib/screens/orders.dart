@@ -22,6 +22,7 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
+  bool isLoading = false;
   void getuserid() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
@@ -39,8 +40,14 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   void getOrders() async {
+    setState(() {
+      isLoading = true;
+    });
     orderProvider = Provider.of<OrderProvider>(context, listen: false);
     await orderProvider.fetchOrders(userid!);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -63,7 +70,6 @@ class _OrdersPageState extends State<OrdersPage> {
               snapshot.data!.data() as Map<String, dynamic>;
           userController.setUser(map);
           int length = orderProvider.products.length;
-          setState(() {});
 
           return Scaffold(
             drawer: const MenuDrawer(),
@@ -87,124 +93,129 @@ class _OrdersPageState extends State<OrdersPage> {
               ],
               backgroundColor: Color(0xff005acd),
             ),
-            body: length == 0
-                ? Container(
-                    color: Colors.white,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Nothing ordered yet:( ",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold)),
-                          Text(
-                            "Let's buy something first",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          LoginButton(
-                              txt: "View Dashboard",
-                              color: Colors.orange,
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, Dashboard.routeName);
-                              })
-                        ],
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: orderProvider.products.length,
-                    // itemCount: orderlist.length,
-                    itemBuilder: ((context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Center(
-                                    child: Text(
-                                  'Order#: ${orderProvider.products[index][0].orderId} : ${orderProvider.products[index][0].orderStatus}',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
-                                SizedBox(
-                                  height: 13,
-                                ),
-                                Text(
-                                  'Delivery Address: ${orderProvider.products[index][0].address}',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  'Order Time: ${orderProvider.products[index][0].dateTime}',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount:
-                                          orderProvider.products[index].length,
-                                      // itemCount: orderlist[index].length,
-                                      itemBuilder: (context, idx) {
-                                        return Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                                '${orderProvider.products[index][idx].productName} x ${orderProvider.products[index][idx].quantity} :'),
-                                            Text(
-                                                '${orderProvider.products[index][idx].productCost}')
-                                          ],
-                                        );
-                                      }),
-                                ),
-                                Divider(
-                                  thickness: 5,
+            body: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : length == 0
+                    ? Container(
+                        color: Colors.white,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Nothing ordered yet:( ",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              Text(
+                                "Let's buy something first",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              LoginButton(
+                                  txt: "View Dashboard",
                                   color: Colors.orange,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Delivery Fee :'),
-                                    Text('10')
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Your Total:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      'Rs. ${orderProvider.products[index][0].totalCost}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, Dashboard.routeName);
+                                  })
+                            ],
                           ),
                         ),
-                      );
-                    })),
+                      )
+                    : ListView.builder(
+                        itemCount: orderProvider.products.length,
+                        // itemCount: orderlist.length,
+                        itemBuilder: ((context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Center(
+                                        child: Text(
+                                      'Order#: ${orderProvider.products[index][0].orderId} : ${orderProvider.products[index][0].orderStatus}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                    SizedBox(
+                                      height: 13,
+                                    ),
+                                    Text(
+                                      'Delivery Address: ${orderProvider.products[index][0].address}',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Order Time: ${orderProvider.products[index][0].dateTime}',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      child: ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemCount: orderProvider
+                                              .products[index].length,
+                                          // itemCount: orderlist[index].length,
+                                          itemBuilder: (context, idx) {
+                                            return Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    '${orderProvider.products[index][idx].productName} x ${orderProvider.products[index][idx].quantity} :'),
+                                                Text(
+                                                    '${orderProvider.products[index][idx].productCost}')
+                                              ],
+                                            );
+                                          }),
+                                    ),
+                                    Divider(
+                                      thickness: 5,
+                                      color: Colors.orange,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Delivery Fee :'),
+                                        Text('10')
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Your Total:',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          'Rs. ${orderProvider.products[index][0].totalCost}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        })),
           );
         });
   }
