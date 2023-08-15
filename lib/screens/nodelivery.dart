@@ -28,6 +28,11 @@ class DeliveryUnavailableScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 20.0),
                 textAlign: TextAlign.center,
               ),
+              Text(
+                "Contact: +91 87891 92148",
+                style: TextStyle(fontSize: 20.0),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
