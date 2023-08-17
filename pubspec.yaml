@@ -51,6 +51,7 @@ dependencies:
   get: ^4.6.5
   pinput: ^2.2.16
   cached_network_image: ^3.2.3
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:
