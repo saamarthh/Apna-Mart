@@ -35,12 +35,17 @@ class _DashboardState extends State<Dashboard> {
   final desiredLocation = LatLng(23.2992973, 85.2701807);
   List<Map<String, dynamic>> saleBanners = [];
 
+  ProductProvider controller = ProductProvider();
+
   @override
   void initState() {
     super.initState();
     getUidFromSharedPreferences();
     checkUserLocation();
     fetchSaleBanners();
+    controller.fetchCategory();
+    controller.fetchProduct();
+    controller.totalPrice();
   }
 
   Future<void> fetchSaleBanners() async {
@@ -111,16 +116,22 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    ProductProvider controller = Provider.of<ProductProvider>(context);
+    // ProductProvider controller =
+    //     Provider.of<ProductProvider>(context, listen: false);
     UserProvider userController = Provider.of<UserProvider>(context);
     print(userid);
-    controller.fetchCategory();
-    controller.fetchPaginatedProducts();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(Duration(milliseconds: 100));
-      controller.totalPrice();
-    });
+    
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   await Future.delayed(Duration(milliseconds: 100));
+
+    // });
     int length = controller.cartProducts.length;
     num totalprice = controller.totalCost;
     final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -297,47 +308,30 @@ class _DashboardState extends State<Dashboard> {
                                         mainAxisExtent:
                                             MediaQuery.sizeOf(context).height /
                                                 3),
-                                itemCount: controller.products.length + 1,
+                                itemCount: controller.products.length,
                                 itemBuilder: ((context, index) {
-                                  if (index < controller.products.length) {
-                                    Product cartItem =
-                                        controller.products[index];
-                                    // bool addDisabled = false;
-                                    return ProductTile(
-                                      product: cartItem,
-                                      // addDisabled: addDisabled,
-                                      ontap: () {
-                                        setState(() {
-                                          controller.cartProducts.add(cartItem);
-                                          controller.totalPrice();
-                                          length =
-                                              controller.cartProducts.length;
-                                          totalprice = controller.totalCost;
-                                        });
+                                  Product cartItem = controller.products[index];
+                                  // bool addDisabled = false;
+                                  return ProductTile(
+                                    product: cartItem,
+                                    // addDisabled: addDisabled,
+                                    ontap: () {
+                                      setState(() {
+                                        controller.cartProducts.add(cartItem);
+                                        controller.totalPrice();
+                                        length = controller.cartProducts.length;
+                                        totalprice = controller.totalCost;
+                                      });
 
-                                        var snackBar = SnackBar(
-                                          content: Text(
-                                              'Added to Cart! Click 🛒 to update your order'),
-                                          duration: Duration(seconds: 1),
-                                        );
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(snackBar);
-                                      },
-                                    );
-                                  } else if (index ==
-                                          controller.products.length &&
-                                      controller.hasMoreItems) {
-                                    return Center(
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          await controller
-                                              .fetchPaginatedProducts();
-                                          setState(() {});
-                                        },
-                                        child: Text('Load More'),
-                                      ),
-                                    );
-                                  }
+                                      var snackBar = SnackBar(
+                                        content: Text(
+                                            'Added to Cart! Click 🛒 to update your order'),
+                                        duration: Duration(seconds: 1),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    },
+                                  );
                                 }),
                               ),
                             ),

@@ -34,8 +34,14 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+  
+  @override
   Widget build(BuildContext context) {
-    var controller = Provider.of<ProductProvider>(context);
+    var controller = Provider.of<ProductProvider>(context, listen: false);
     var userController = Provider.of<UserProvider>(context);
     controller.fetchCategoryProduct(widget.categoryName);
     WidgetsBinding.instance.addPostFrameCallback((_) async{

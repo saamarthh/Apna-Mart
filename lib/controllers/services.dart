@@ -76,10 +76,13 @@ class ProductProvider with ChangeNotifier {
         }
         lastDocument = lastProduct;
         print(lastProduct.id);
+        print(paginatedProducts.length);
       } else {
         hasMoreItems = false;
       }
-      _products.addAll(paginatedProducts.map((product) => product));
+      paginatedProducts.forEach((element) {
+        _products.add(element);
+      });
     } catch (error) {
       print(error);
     }

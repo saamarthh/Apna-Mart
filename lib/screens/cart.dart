@@ -36,8 +36,13 @@ class _CartPageState extends State<CartPage> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<ProductProvider>(context);
+    final controller = Provider.of<ProductProvider>(context, listen: false);
     var userController = Provider.of<UserProvider>(context);
 
     controller.totalPrice();

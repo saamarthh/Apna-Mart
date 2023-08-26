@@ -37,7 +37,8 @@ class MenuDrawer extends StatelessWidget {
                       children: [
                         Text(
                           "${userProvider.user.name}",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 25),
                         ),
                         Text("Contact Number: ${userProvider.user.phoneNumber}",
                             style: TextStyle(fontSize: 14, color: Colors.grey)),
@@ -46,14 +47,16 @@ class MenuDrawer extends StatelessWidget {
                             style: TextStyle(fontSize: 14, color: Colors.grey)),
                         Text(
                             "Your Loyalty Points: ${userProvider.user.loyaltyPoints}",
-                            style:
-                                TextStyle(fontWeight: FontWeight.bold, fontSize: 14))
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14))
                       ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
-                    child: Text("Your Actions", style: TextStyle(color: Colors.grey)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 5),
+                    child: Text("Your Actions",
+                        style: TextStyle(color: Colors.grey)),
                   ),
                   ListTile(
                       title: const Text(
@@ -61,7 +64,8 @@ class MenuDrawer extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
-                        Navigator.pushNamed(context, Dashboard.routeName);
+                        // Navigator.pushNamed(context, Dashboard.routeName);
+                        Navigator.pushReplacementNamed(context, Dashboard.routeName);
                       }),
                   ListTile(
                       title: const Text('Your orders',
@@ -82,9 +86,10 @@ class MenuDrawer extends StatelessWidget {
                         Navigator.pushNamed(context, ProfileScreen.routeName);
                       }),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
-                    child:
-                        Text("Other Actions", style: TextStyle(color: Colors.grey)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 5),
+                    child: Text("Other Actions",
+                        style: TextStyle(color: Colors.grey)),
                   ),
                   ListTile(
                       title: const Text('Know About us',
@@ -101,18 +106,23 @@ class MenuDrawer extends StatelessWidget {
                         final SharedPreferences pref =
                             await SharedPreferences.getInstance();
                         await pref.remove('uid');
-                        Navigator.pushReplacementNamed(context, LoginPage.routeName);
+                        Navigator.pushReplacementNamed(
+                            context, LoginPage.routeName);
                       })
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal:5.0),
-              child: Text("For queries, contact:", style:TextStyle(color: Colors.grey),),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: Text(
+                "For queries, contact:",
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal:5.0),
-              child: Text("+91 87891 92148", style:TextStyle(color: Colors.black)),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: Text("+91 87891 92148",
+                  style: TextStyle(color: Colors.black)),
             )
           ],
         ),
