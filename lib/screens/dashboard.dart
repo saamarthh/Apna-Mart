@@ -116,7 +116,7 @@ class _DashboardState extends State<Dashboard> {
     UserProvider userController = Provider.of<UserProvider>(context);
     print(userid);
     controller.fetchCategory();
-    controller.fetchProduct();
+    controller.fetchPaginatedProducts();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(Duration(milliseconds: 100));
       controller.totalPrice();
@@ -288,22 +288,18 @@ class _DashboardState extends State<Dashboard> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(3.0),
-                              child: RefreshIndicator(
-                                onRefresh: () async {
-                                  await controller.fetchProduct();
-                                },
-                                child: GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          mainAxisExtent:
-                                              MediaQuery.sizeOf(context)
-                                                      .height /
-                                                  3),
-                                  itemCount: controller.products.length,
-                                  itemBuilder: ((context, index) {
+                              child: GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        mainAxisExtent:
+                                            MediaQuery.sizeOf(context).height /
+                                                3),
+                                itemCount: controller.products.length + 1,
+                                itemBuilder: ((context, index) {
+                                  if (index < controller.products.length) {
                                     Product cartItem =
                                         controller.products[index];
                                     // bool addDisabled = false;
@@ -328,8 +324,21 @@ class _DashboardState extends State<Dashboard> {
                                             .showSnackBar(snackBar);
                                       },
                                     );
-                                  }),
-                                ),
+                                  } else if (index ==
+                                          controller.products.length &&
+                                      controller.hasMoreItems) {
+                                    return Center(
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          await controller
+                                              .fetchPaginatedProducts();
+                                          setState(() {});
+                                        },
+                                        child: Text('Load More'),
+                                      ),
+                                    );
+                                  }
+                                }),
                               ),
                             ),
                           ],
@@ -424,7 +433,9 @@ class ProductTile extends StatelessWidget {
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       CircularProgressIndicator(
                           value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => product.image==''?Icon(Icons.error):Image.network(product.image),
+                  errorWidget: (context, url, error) => product.image == ''
+                      ? Icon(Icons.error)
+                      : Image.network(product.image),
                 ),
               ),
             ),

@@ -16,6 +16,9 @@ class ProductProvider with ChangeNotifier {
   List<Product> get categoryProducts => _categoryProducts;
 
   double totalCost = 0;
+  bool hasMoreItems = true;
+  int itemsPerPage = 8;
+  DocumentSnapshot<Map<String, dynamic>>? lastDocument;
 
   // Read all grocery items from Firestore
   Future<void> fetchProduct() async {
@@ -39,6 +42,44 @@ class ProductProvider with ChangeNotifier {
       });
       _products = loadedProduct;
       notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> fetchPaginatedProducts() async {
+    try {
+      List<Product> paginatedProducts = [];
+      DocumentSnapshot<Map<String, dynamic>>? lastProduct = lastDocument;
+      if (!hasMoreItems) {
+        return; // No need to fetch more if there are no more items
+      }
+
+      var query = FirebaseFirestore.instance
+          .collection('products')
+          .orderBy('name')
+          .limit(itemsPerPage);
+
+      if (lastProduct != null) {
+        query = query.startAfterDocument(lastProduct);
+      }
+
+      var querySnapshot = await query.get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        lastProduct = querySnapshot.docs.last;
+        paginatedProducts.addAll(
+            querySnapshot.docs.map((doc) => Product.fromMap(doc.data())));
+
+        if (querySnapshot.docs.length < itemsPerPage) {
+          hasMoreItems = false; // No more items to load
+        }
+        lastDocument = lastProduct;
+        print(lastProduct.id);
+      } else {
+        hasMoreItems = false;
+      }
+      _products.addAll(paginatedProducts.map((product) => product));
     } catch (error) {
       print(error);
     }
@@ -81,7 +122,6 @@ class ProductProvider with ChangeNotifier {
               mrp_price: doc['mrp_price']),
         );
       });
-      
     } catch (error) {
       print(error);
     }

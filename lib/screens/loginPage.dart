@@ -49,7 +49,8 @@ class _LoginPageState extends State<LoginPage> {
           verificationId: verificationId,
           smsCode: smsCode,
         );
-        Get.to(OtpPage(), arguments: [verificationId]);
+        // Get.to(OtpPage(), arguments: [verificationId]);
+        Navigator.pushReplacementNamed(context, OtpPage.routeName, arguments: [verificationId]);
         await auth.signInWithCredential(credential);
         // authentication successful, do something
       },
