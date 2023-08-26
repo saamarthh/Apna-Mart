@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/categoryDashboard.dart';
@@ -31,12 +33,22 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   double distanceInKm = 0.0;
   final desiredLocation = LatLng(23.2992973, 85.2701807);
+  List<Map<String, dynamic>> saleBanners = [];
 
   @override
   void initState() {
     super.initState();
     getUidFromSharedPreferences();
     checkUserLocation();
+    fetchSaleBanners();
+  }
+
+  Future<void> fetchSaleBanners() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('saleBanner').get();
+    setState(() {
+      saleBanners = snapshot.docs.map((doc) => doc.data()).toList();
+    });
   }
 
   Future<void> checkUserLocation() async {
@@ -186,7 +198,11 @@ class _DashboardState extends State<Dashboard> {
                         child: ListView(
                           shrinkWrap: true,
                           children: [
-                            FreedomSaleCard(),
+                            saleBanners.isEmpty
+                                ? SizedBox()
+                                : FreedomSaleCard(
+                                    saleBanners: saleBanners,
+                                  ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 8, top: 8, bottom: 8),
