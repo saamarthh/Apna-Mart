@@ -103,9 +103,10 @@ class _DashboardState extends State<Dashboard> {
     ProductProvider controller = Provider.of<ProductProvider>(context);
     UserProvider userController = Provider.of<UserProvider>(context);
     print(userid);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchCategory();
-      controller.fetchProduct();
+    controller.fetchCategory();
+    controller.fetchProduct();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(Duration(milliseconds: 100));
       controller.totalPrice();
     });
     int length = controller.cartProducts.length;
@@ -407,7 +408,7 @@ class ProductTile extends StatelessWidget {
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       CircularProgressIndicator(
                           value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  errorWidget: (context, url, error) => product.image==''?Icon(Icons.error):Image.network(product.image),
                 ),
               ),
             ),
