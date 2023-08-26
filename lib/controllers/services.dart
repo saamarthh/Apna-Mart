@@ -41,7 +41,7 @@ class ProductProvider with ChangeNotifier {
         );
       });
       _products = loadedProduct;
-      notifyListeners();
+      // notifyListeners();
     } catch (error) {
       print(error);
     }
