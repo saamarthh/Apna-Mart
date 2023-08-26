@@ -35,7 +35,6 @@ class _DashboardState extends State<Dashboard> {
   final desiredLocation = LatLng(23.2992973, 85.2701807);
   List<Map<String, dynamic>> saleBanners = [];
 
-  ProductProvider controller = ProductProvider();
 
   @override
   void initState() {
@@ -43,9 +42,7 @@ class _DashboardState extends State<Dashboard> {
     getUidFromSharedPreferences();
     checkUserLocation();
     fetchSaleBanners();
-    controller.fetchCategory();
-    controller.fetchProduct();
-    controller.totalPrice();
+    
   }
 
   Future<void> fetchSaleBanners() async {
@@ -123,11 +120,13 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // ProductProvider controller =
-    //     Provider.of<ProductProvider>(context, listen: false);
+    ProductProvider controller =
+        Provider.of<ProductProvider>(context, listen: false);
     UserProvider userController = Provider.of<UserProvider>(context);
     print(userid);
-
+    controller.fetchCategory();
+    controller.fetchProduct();
+    controller.totalPrice();
     // WidgetsBinding.instance.addPostFrameCallback((_) async {
     //   await Future.delayed(Duration(milliseconds: 100));
 
@@ -263,6 +262,7 @@ class _DashboardState extends State<Dashboard> {
                                                 //   imageUrl: controller
                                                 //       .category[index]
                                                 //       .categoryImage,
+                                                  
                                                 //   progressIndicatorBuilder: (context,
                                                 //           url,
                                                 //           downloadProgress) =>
@@ -432,6 +432,7 @@ class ProductTile extends StatelessWidget {
                   )
                   // child: CachedNetworkImage(
                   //   imageUrl: product.image,
+                  //   fit: BoxFit.contain,
                   //   progressIndicatorBuilder: (context, url, downloadProgress) =>
                   //       CircularProgressIndicator(
                   //           value: downloadProgress.progress),
