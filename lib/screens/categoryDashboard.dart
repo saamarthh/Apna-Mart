@@ -37,8 +37,9 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchCategoryProduct(widget.categoryName);
+    controller.fetchCategoryProduct(widget.categoryName);
+    WidgetsBinding.instance.addPostFrameCallback((_) async{
+      await Future.delayed(Duration(milliseconds: 100));
       controller.totalPrice();
     });
     int length = controller.cartProducts.length;
