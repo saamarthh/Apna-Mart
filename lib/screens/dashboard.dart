@@ -35,14 +35,12 @@ class _DashboardState extends State<Dashboard> {
   final desiredLocation = LatLng(23.2992973, 85.2701807);
   List<Map<String, dynamic>> saleBanners = [];
 
-
   @override
   void initState() {
     super.initState();
     getUidFromSharedPreferences();
     checkUserLocation();
     fetchSaleBanners();
-    
   }
 
   Future<void> fetchSaleBanners() async {
@@ -124,13 +122,19 @@ class _DashboardState extends State<Dashboard> {
         Provider.of<ProductProvider>(context, listen: false);
     UserProvider userController = Provider.of<UserProvider>(context);
     print(userid);
-    controller.fetchCategory();
-    controller.fetchProduct();
+    if (controller.cartProducts.isEmpty) {
+      controller.fetchCategory();
+    }
+    if (controller.products.isEmpty) {
+      controller.fetchProduct();
+    }
     controller.totalPrice();
+
     // WidgetsBinding.instance.addPostFrameCallback((_) async {
     //   await Future.delayed(Duration(milliseconds: 100));
 
     // });
+    
     int length = controller.cartProducts.length;
     num totalprice = controller.totalCost;
     final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -262,7 +266,7 @@ class _DashboardState extends State<Dashboard> {
                                                 //   imageUrl: controller
                                                 //       .category[index]
                                                 //       .categoryImage,
-                                                  
+
                                                 //   progressIndicatorBuilder: (context,
                                                 //           url,
                                                 //           downloadProgress) =>
