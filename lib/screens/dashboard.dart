@@ -122,7 +122,7 @@ class _DashboardState extends State<Dashboard> {
         Provider.of<ProductProvider>(context, listen: false);
     UserProvider userController = Provider.of<UserProvider>(context);
     print(userid);
-    if (controller.cartProducts.isEmpty) {
+    if (controller.category.isEmpty) {
       controller.fetchCategory();
     }
     if (controller.products.isEmpty) {
@@ -134,7 +134,7 @@ class _DashboardState extends State<Dashboard> {
     //   await Future.delayed(Duration(milliseconds: 100));
 
     // });
-    
+
     int length = controller.cartProducts.length;
     num totalprice = controller.totalCost;
     final scaffoldKey = GlobalKey<ScaffoldState>();
