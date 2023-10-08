@@ -256,7 +256,7 @@ class ProductTile extends StatelessWidget {
                   width: 60,
                   child: Image.network(
                     product.image,
-                    fit: BoxFit.contain,
+                    fit: BoxFit.fill,
                   )),
             ),
             Column(
