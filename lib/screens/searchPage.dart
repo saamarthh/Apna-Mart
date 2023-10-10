@@ -37,7 +37,13 @@ class _SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search for your Products'),
+        title: Text('Search for your Products',
+            textAlign: TextAlign.left,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 15)),
+        backgroundColor: Color(0xff005acd),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
