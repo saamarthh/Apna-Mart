@@ -34,6 +34,8 @@ class _DashboardState extends State<Dashboard> {
   double distanceInKm = 0.0;
   final desiredLocation = LatLng(23.2992973, 85.2701807);
   List<Map<String, dynamic>> saleBanners = [];
+  int currentPage = 1; // Current page number
+  int itemsPerPage = 20; 
 
   @override
   void initState() {
@@ -138,8 +140,25 @@ class _DashboardState extends State<Dashboard> {
     int length = controller.cartProducts.length;
     num totalprice = controller.totalCost;
     final scaffoldKey = GlobalKey<ScaffoldState>();
+    // Number of items to display per page
 
-    return distanceInKm > 10
+    List<Product> getPaginatedProducts() {
+      // Calculate the starting and ending indices for the current page
+      int startIndex = (currentPage - 1) * itemsPerPage;
+      int endIndex = currentPage * itemsPerPage;
+      print(controller.products);
+
+      // Return a sublist of products for the current page
+      return controller.products.sublist(
+        startIndex,
+        endIndex.clamp(
+            0,
+            controller.products
+                .length), // Ensure endIndex doesn't exceed the list length
+      );
+    }
+
+    return distanceInKm < 10
         ? DeliveryUnavailableScreen()
         : FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
             future: FirebaseFirestore.instance
@@ -259,26 +278,24 @@ class _DashboardState extends State<Dashboard> {
                                             SizedBox(
                                                 width: 50,
                                                 height: 50,
-                                                child: Image.network(controller
-                                                    .category[index]
-                                                    .categoryImage)
-                                                // child: CachedNetworkImage(
-                                                //   imageUrl: controller
-                                                //       .category[index]
-                                                //       .categoryImage,
-
-                                                //   progressIndicatorBuilder: (context,
-                                                //           url,
-                                                //           downloadProgress) =>
-                                                //       CircularProgressIndicator(
-                                                //           value:
-                                                //               downloadProgress
-                                                //                   .progress),
-                                                //   errorWidget:
-                                                //       (context, url, error) =>
-                                                //           Icon(Icons.error),
-                                                // )
-                                                ),
+                                                // child: Image.network(controller
+                                                //     .category[index]
+                                                //     .categoryImage)
+                                                child: CachedNetworkImage(
+                                                  imageUrl: controller
+                                                      .category[index]
+                                                      .categoryImage,
+                                                  progressIndicatorBuilder: (context,
+                                                          url,
+                                                          downloadProgress) =>
+                                                      CircularProgressIndicator(
+                                                          value:
+                                                              downloadProgress
+                                                                  .progress),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                )),
                                             Center(
                                               child: Text(
                                                 "${controller.category[index].categoryName}",
@@ -316,9 +333,10 @@ class _DashboardState extends State<Dashboard> {
                                         mainAxisExtent:
                                             MediaQuery.sizeOf(context).height /
                                                 3),
-                                itemCount: controller.products.length,
+                                itemCount: getPaginatedProducts().length,
                                 itemBuilder: ((context, index) {
-                                  Product cartItem = controller.products[index];
+                                  Product cartItem =
+                                      getPaginatedProducts()[index];
                                   // bool addDisabled = false;
                                   return ProductTile(
                                     product: cartItem,
@@ -345,6 +363,36 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           ],
                         ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              if (currentPage > 1) {
+                                setState(() {
+                                  currentPage--;
+                                });
+                              }
+                              print(currentPage);
+                            },
+                            child: Text("Previous Page"),
+                          ),
+                          SizedBox(width: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (currentPage <
+                                  (controller.products.length / itemsPerPage)
+                                      .ceil()) {
+                                setState(() {
+                                  currentPage++;
+                                });
+                                print(currentPage);
+                              }
+                            },
+                            child: Text("Next Page"),
+                          ),
+                        ],
                       ),
                       if (totalprice != 0)
                         Container(
@@ -428,22 +476,21 @@ class ProductTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                  height: 90,
-                  width: 80,
-                  child: Image.network(
-                    product.image,
+                height: 90,
+                width: 80,
+                // child: Image.network(
+                //   product.image,
+                //   fit: BoxFit.fill,
+                // )
+                child: CachedNetworkImage(
+                    imageUrl: product.image,
                     fit: BoxFit.fill,
-                  )
-                  // child: CachedNetworkImage(
-                  //   imageUrl: product.image,
-                  //   fit: BoxFit.contain,
-                  //   progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  //       CircularProgressIndicator(
-                  //           value: downloadProgress.progress),
-                  //   errorWidget: (context, url, error) => Icon(Icons.error)
-
-                  // ),
-                  ),
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error)),
+              ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,

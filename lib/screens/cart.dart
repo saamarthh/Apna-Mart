@@ -41,6 +41,7 @@ class _CartPageState extends State<CartPage> {
     var userController = Provider.of<UserProvider>(context);
     controller.totalPrice();
     double totalCost = controller.totalCost;
+    double deliveryCost = controller.deliveryCost;
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future:
             FirebaseFirestore.instance.collection('users').doc(userid).get(),
@@ -113,6 +114,8 @@ class _CartPageState extends State<CartPage> {
                                       controller.increaseQuantity(index);
                                       controller.totalPrice();
                                       totalCost = controller.totalCost;
+                                      controller.setDeliveryCost();
+                                      deliveryCost = controller.deliveryCost;
                                     });
                                   },
                                   decreaseCount: () {
@@ -120,6 +123,8 @@ class _CartPageState extends State<CartPage> {
                                       controller.decreaseQuantity(index);
                                       controller.totalPrice();
                                       totalCost = controller.totalCost;
+                                      controller.setDeliveryCost();
+                                      deliveryCost = controller.deliveryCost;
                                     });
                                   });
                             },
@@ -155,7 +160,7 @@ class _CartPageState extends State<CartPage> {
                                           color: Colors.black),
                                     ),
                                     Text(
-                                      "Rs.10",
+                                      "Rs. ${deliveryCost}",
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                           fontSize: 17,
@@ -177,7 +182,7 @@ class _CartPageState extends State<CartPage> {
                                           color: Colors.black),
                                     ),
                                     Text(
-                                      "Rs.${totalCost + 10}",
+                                      "Rs.${totalCost + deliveryCost}",
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                           fontSize: 22,
@@ -200,7 +205,7 @@ class _CartPageState extends State<CartPage> {
                               OrderProvider().addOrders(
                                   userController.user,
                                   controller.cartProducts,
-                                  controller.totalCost+10);
+                                  controller.totalCost + 10);
                               userController.user.isFirstTime
                                   ? userController.updateToReturningUser(
                                       userController.user.uid)

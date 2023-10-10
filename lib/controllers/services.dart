@@ -16,6 +16,7 @@ class ProductProvider with ChangeNotifier {
   List<Product> get categoryProducts => _categoryProducts;
 
   double totalCost = 0;
+  double deliveryCost = 0;
   bool hasMoreItems = true;
   int itemsPerPage = 8;
   DocumentSnapshot<Map<String, dynamic>>? lastDocument;
@@ -45,6 +46,15 @@ class ProductProvider with ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+
+  void setDeliveryCost() {
+    if (totalCost < 700) {
+      deliveryCost = 40;
+    } else {
+      deliveryCost = 0;
+    }
+    notifyListeners();
   }
 
   Future<void> fetchPaginatedProducts() async {

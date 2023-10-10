@@ -9,6 +9,8 @@ import 'package:apna_mart/controllers/services.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 class CategoryDashboard extends StatefulWidget {
   String categoryName;
@@ -254,10 +256,20 @@ class ProductTile extends StatelessWidget {
               child: SizedBox(
                   height: 60,
                   width: 60,
-                  child: Image.network(
-                    product.image,
+                  // child: Image.network(
+                  //   product.image,
+                  //   fit: BoxFit.fill,
+                  // ),
+                   child: CachedNetworkImage(
+                    imageUrl: product.image,
                     fit: BoxFit.fill,
-                  )),
+                    progressIndicatorBuilder: (context, url, downloadProgress) =>
+                        CircularProgressIndicator(
+                            value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error)
+
+                  ),
+                  ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
