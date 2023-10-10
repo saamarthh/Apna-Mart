@@ -11,7 +11,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 class CategoryDashboard extends StatefulWidget {
   String categoryName;
   CategoryDashboard({super.key, required this.categoryName});
@@ -23,6 +22,8 @@ class CategoryDashboard extends StatefulWidget {
 }
 
 class _CategoryDashboardState extends State<CategoryDashboard> {
+  int currentPage = 1; // Current page number
+  int itemsPerPage = 20;
   @override
   void initState() {
     super.initState();
@@ -45,7 +46,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context, listen: false);
     var userController = Provider.of<UserProvider>(context);
-    
+
     controller.categoryProducts.clear();
 
     controller.fetchCategoryProduct(widget.categoryName);
@@ -59,19 +60,30 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
       totalprice = controller.totalCost;
     });
 
+    List<Product> getPaginatedProducts() {
+      // Calculate the starting and ending indices for the current page
+      int startIndex = (currentPage - 1) * itemsPerPage;
+      int endIndex = currentPage * itemsPerPage;
+
+      // Return a sublist of products for the current page
+      return controller.categoryProducts.sublist(
+        startIndex,
+        endIndex.clamp(
+            0,
+            controller.categoryProducts
+                .length), // Ensure endIndex doesn't exceed the list length
+      );
+    }
+
+    print(controller.categoryProducts.length);
+
     final scaffoldKey = GlobalKey<ScaffoldState>();
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future:
             FirebaseFirestore.instance.collection('users').doc(userid).get(),
         builder: (context, snapshot) {
-          if (controller.categoryProducts.length == 0) {
-            return LoadingScreen();
-          }
-
           if (!snapshot.hasData) {
-            return Center(
-              child: Text("No Product under this category !"),
-            );
+            return LoadingScreen();
           }
 
           Map<String, dynamic> map =
@@ -152,10 +164,9 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                                     crossAxisCount: 2,
                                     mainAxisExtent:
                                         MediaQuery.sizeOf(context).height / 3),
-                            itemCount: controller.categoryProducts.length,
+                            itemCount: getPaginatedProducts().length,
                             itemBuilder: ((context, index) {
-                              Product cartItem =
-                                  controller.categoryProducts[index];
+                              Product cartItem = getPaginatedProducts()[index];
                               return ProductTile(
                                 product: cartItem,
                                 ontap: () {
@@ -179,6 +190,37 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                         ),
                       ],
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back_ios),
+                        onPressed: () {
+                          if (currentPage > 1) {
+                            setState(() {
+                              currentPage--;
+                            });
+                          }
+                          print(currentPage);
+                        },
+                      ),
+                      SizedBox(width: 16),
+                      IconButton(
+                        icon: Icon(Icons.arrow_forward_ios),
+                        onPressed: () {
+                          if (currentPage <
+                              (controller.categoryProducts.length /
+                                      itemsPerPage)
+                                  .ceil()) {
+                            setState(() {
+                              currentPage++;
+                            });
+                            print(currentPage);
+                          }
+                        },
+                      ),
+                    ],
                   ),
                   totalprice != 0
                       ? Container(
@@ -263,22 +305,21 @@ class ProductTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                  height: 60,
-                  width: 60,
-                  // child: Image.network(
-                  //   product.image,
-                  //   fit: BoxFit.fill,
-                  // ),
-                   child: CachedNetworkImage(
+                height: 60,
+                width: 60,
+                // child: Image.network(
+                //   product.image,
+                //   fit: BoxFit.fill,
+                // ),
+                child: CachedNetworkImage(
                     imageUrl: product.image,
                     fit: BoxFit.fill,
-                    progressIndicatorBuilder: (context, url, downloadProgress) =>
-                        CircularProgressIndicator(
-                            value: downloadProgress.progress),
-                    errorWidget: (context, url, error) => Icon(Icons.error)
-
-                  ),
-                  ),
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error)),
+              ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,

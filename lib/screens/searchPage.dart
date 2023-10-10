@@ -18,8 +18,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    ProductProvider controller =
-        Provider.of<ProductProvider>(context, listen: false);
+    ProductProvider controller =Provider.of<ProductProvider>(context, listen: false);
 
     if (controller.products.isEmpty) {
       controller.fetchProduct();

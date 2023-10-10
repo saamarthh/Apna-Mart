@@ -34,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
   final desiredLocation = LatLng(23.2992973, 85.2701807);
   List<Map<String, dynamic>> saleBanners = [];
   int currentPage = 1; // Current page number
-  int itemsPerPage = 20; 
+  int itemsPerPage = 20;
 
   @override
   void initState() {
@@ -145,7 +145,6 @@ class _DashboardState extends State<Dashboard> {
       // Calculate the starting and ending indices for the current page
       int startIndex = (currentPage - 1) * itemsPerPage;
       int endIndex = currentPage * itemsPerPage;
-      print(controller.products);
 
       // Return a sublist of products for the current page
       return controller.products.sublist(
@@ -368,7 +367,8 @@ class _DashboardState extends State<Dashboard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton(
+                          IconButton(
+                            icon: Icon(Icons.arrow_back_ios),
                             onPressed: () {
                               if (currentPage > 1) {
                                 setState(() {
@@ -377,10 +377,10 @@ class _DashboardState extends State<Dashboard> {
                               }
                               print(currentPage);
                             },
-                            child: Text("Previous Page"),
                           ),
                           SizedBox(width: 16),
-                          ElevatedButton(
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward_ios),
                             onPressed: () {
                               if (currentPage <
                                   (controller.products.length / itemsPerPage)
@@ -391,7 +391,6 @@ class _DashboardState extends State<Dashboard> {
                                 print(currentPage);
                               }
                             },
-                            child: Text("Next Page"),
                           ),
                         ],
                       ),
