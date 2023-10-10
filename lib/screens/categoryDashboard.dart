@@ -38,26 +38,38 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
     // TODO: implement dispose
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     var controller = Provider.of<ProductProvider>(context, listen: false);
     var userController = Provider.of<UserProvider>(context);
+    
+    controller.categoryProducts.clear();
+
     controller.fetchCategoryProduct(widget.categoryName);
-    WidgetsBinding.instance.addPostFrameCallback((_) async{
-      await Future.delayed(Duration(milliseconds: 100));
-      controller.totalPrice();
+
+    controller.totalPrice();
+    int length = 0;
+    num totalprice = 0;
+
+    setState(() {
+      length = controller.cartProducts.length;
+      totalprice = controller.totalCost;
     });
-    int length = controller.cartProducts.length;
-    num totalprice = controller.totalCost;
 
     final scaffoldKey = GlobalKey<ScaffoldState>();
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future:
             FirebaseFirestore.instance.collection('users').doc(userid).get(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData || controller.categoryProducts.length == 0) {
+          if (controller.categoryProducts.length == 0) {
             return LoadingScreen();
+          }
+
+          if (!snapshot.hasData) {
+            return Center(
+              child: Text("No Product under this category !"),
+            );
           }
 
           Map<String, dynamic> map =
@@ -135,12 +147,9 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                             physics: NeverScrollableScrollPhysics(),
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                                          mainAxisExtent:
-                                              MediaQuery.sizeOf(context)
-                                                      .height /
-                                                  3
-                            ),
+                                    crossAxisCount: 2,
+                                    mainAxisExtent:
+                                        MediaQuery.sizeOf(context).height / 3),
                             itemCount: controller.categoryProducts.length,
                             itemBuilder: ((context, index) {
                               Product cartItem =

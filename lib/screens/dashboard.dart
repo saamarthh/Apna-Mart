@@ -1,5 +1,4 @@
-import 'dart:ffi';
-
+import 'searchPage.dart';
 import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/categoryDashboard.dart';
@@ -130,13 +129,13 @@ class _DashboardState extends State<Dashboard> {
     }
     controller.totalPrice();
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   await Future.delayed(Duration(milliseconds: 100));
+    int length = 0;
+    num totalprice = 0;
 
-    // });
-
-    int length = controller.cartProducts.length;
-    num totalprice = controller.totalCost;
+    setState(() {
+      length = controller.cartProducts.length;
+      totalprice = controller.totalCost;
+    });
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
     return distanceInKm > 10
@@ -168,7 +167,9 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   actions: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, SearchPage.routeName);
+                      },
                       icon: Icon(Icons.search_rounded),
                       color: Colors.white,
                     ),
@@ -259,26 +260,24 @@ class _DashboardState extends State<Dashboard> {
                                             SizedBox(
                                                 width: 50,
                                                 height: 50,
-                                                child: Image.network(controller
-                                                    .category[index]
-                                                    .categoryImage)
-                                                // child: CachedNetworkImage(
-                                                //   imageUrl: controller
-                                                //       .category[index]
-                                                //       .categoryImage,
-
-                                                //   progressIndicatorBuilder: (context,
-                                                //           url,
-                                                //           downloadProgress) =>
-                                                //       CircularProgressIndicator(
-                                                //           value:
-                                                //               downloadProgress
-                                                //                   .progress),
-                                                //   errorWidget:
-                                                //       (context, url, error) =>
-                                                //           Icon(Icons.error),
-                                                // )
-                                                ),
+                                                // child: Image.network(controller
+                                                //     .category[index]
+                                                //     .categoryImage)
+                                                child: CachedNetworkImage(
+                                                  imageUrl: controller
+                                                      .category[index]
+                                                      .categoryImage,
+                                                  progressIndicatorBuilder: (context,
+                                                          url,
+                                                          downloadProgress) =>
+                                                      CircularProgressIndicator(
+                                                          value:
+                                                              downloadProgress
+                                                                  .progress),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                )),
                                             Center(
                                               child: Text(
                                                 "${controller.category[index].categoryName}",
@@ -428,22 +427,21 @@ class ProductTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                  height: 90,
-                  width: 80,
-                  child: Image.network(
-                    product.image,
+                height: 90,
+                width: 80,
+                // child: Image.network(
+                //   product.image,
+                //   fit: BoxFit.fill,
+                // )
+                child: CachedNetworkImage(
+                    imageUrl: product.image,
                     fit: BoxFit.fill,
-                  )
-                  // child: CachedNetworkImage(
-                  //   imageUrl: product.image,
-                  //   fit: BoxFit.contain,
-                  //   progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  //       CircularProgressIndicator(
-                  //           value: downloadProgress.progress),
-                  //   errorWidget: (context, url, error) => Icon(Icons.error)
-
-                  // ),
-                  ),
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Icon(Icons.error)),
+              ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,

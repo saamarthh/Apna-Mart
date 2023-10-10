@@ -7,6 +7,7 @@ import 'package:apna_mart/screens/nodelivery.dart';
 import 'package:apna_mart/screens/orders.dart';
 import 'package:apna_mart/screens/otp_page.dart';
 import 'package:apna_mart/screens/profileScreen.dart';
+import 'package:apna_mart/screens/searchPage.dart';
 import 'package:apna_mart/screens/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -65,6 +66,7 @@ class _MyAppState extends State<MyApp> {
               DeliveryUnavailableScreen(),
           OtpPage.routeName: (context) => OtpPage(),
           LoadingDashboard.routeName: (context) => LoadingDashboard(),
+          SearchPage.routeName: (context) => SearchPage(),
         },
       ),
     );
