@@ -1,5 +1,4 @@
-import 'dart:ffi';
-
+import 'searchPage.dart';
 import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
 import 'package:apna_mart/screens/categoryDashboard.dart';
@@ -132,13 +131,13 @@ class _DashboardState extends State<Dashboard> {
     }
     controller.totalPrice();
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   await Future.delayed(Duration(milliseconds: 100));
+    int length = 0;
+    num totalprice = 0;
 
-    // });
-
-    int length = controller.cartProducts.length;
-    num totalprice = controller.totalCost;
+    setState(() {
+      length = controller.cartProducts.length;
+      totalprice = controller.totalCost;
+    });
     final scaffoldKey = GlobalKey<ScaffoldState>();
     // Number of items to display per page
 
@@ -187,7 +186,9 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   actions: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, SearchPage.routeName);
+                      },
                       icon: Icon(Icons.search_rounded),
                       color: Colors.white,
                     ),
