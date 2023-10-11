@@ -15,6 +15,8 @@ class ProductProvider with ChangeNotifier {
   List<Product> _categoryProducts = [];
   List<Product> get categoryProducts => _categoryProducts;
 
+
+
   double totalCost = 0;
   double deliveryCost = 0;
   bool hasMoreItems = true;
@@ -115,14 +117,14 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchCategoryProduct(String category) async {
+  Future<void> fetchCategoryProduct(QuerySnapshot<Map<String, dynamic>> snapshot) async {
     final List<Product> loadedProduct = [];
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('products')
-          .where('category', isEqualTo: category)
-          .where('quantity', isEqualTo: 1)
-          .get();
+      // final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      //     .collection('products')
+      //     .where('category', isEqualTo: category)
+      //     .where('quantity', isEqualTo: 1)
+      //     .get();
       snapshot.docs.forEach((doc) {
         loadedProduct.add(
           Product(

@@ -156,7 +156,7 @@ class _DashboardState extends State<Dashboard> {
       );
     }
 
-    return distanceInKm < 10
+    return distanceInKm > 10
         ? DeliveryUnavailableScreen()
         : FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
             future: FirebaseFirestore.instance

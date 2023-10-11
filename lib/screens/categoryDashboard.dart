@@ -49,8 +49,6 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
 
     controller.categoryProducts.clear();
 
-    controller.fetchCategoryProduct(widget.categoryName);
-
     controller.totalPrice();
     int length = 0;
     num totalprice = 0;
@@ -78,17 +76,19 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
     print(controller.categoryProducts.length);
 
     final scaffoldKey = GlobalKey<ScaffoldState>();
-    return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        future:
-            FirebaseFirestore.instance.collection('users').doc(userid).get(),
+    return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        future: FirebaseFirestore.instance
+            .collection('products')
+            .where('category', isEqualTo: widget.categoryName)
+            .where('quantity', isEqualTo: 1)
+            .get(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();
           }
 
-          Map<String, dynamic> map =
-              snapshot.data!.data() as Map<String, dynamic>;
-          userController.setUser(map);
+          controller.fetchCategoryProduct(snapshot.data!);
+
           return Scaffold(
             drawer: const MenuDrawer(),
             appBar: AppBar(
@@ -136,143 +136,158 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               ],
               backgroundColor: Color(0xff005acd),
             ),
-            body: Container(
-              decoration: BoxDecoration(color: Colors.white),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
+            body: controller.categoryProducts.isEmpty
+                ? Center(
                     child: Text(
-                      "OUR ${widget.categoryName.toUpperCase()} COLLECTION",
+                      "No Products found!!!",
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
+                          color: Colors.black, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  Expanded(
-                    child: ListView(
+                  )
+                : Container(
+                    decoration: BoxDecoration(color: Colors.white),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisExtent:
-                                        MediaQuery.sizeOf(context).height / 3),
-                            itemCount: getPaginatedProducts().length,
-                            itemBuilder: ((context, index) {
-                              Product cartItem = getPaginatedProducts()[index];
-                              return ProductTile(
-                                product: cartItem,
-                                ontap: () {
-                                  setState(() {
-                                    controller.cartProducts.add(cartItem);
-                                    controller.totalPrice();
-                                    length = controller.cartProducts.length;
-                                    totalprice = controller.totalCost;
-                                  });
-                                  var snackBar = SnackBar(
-                                    content: Text(
-                                        'Added to Cart! Click 🛒 to update your order'),
-                                    duration: Duration(seconds: 1),
-                                  );
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-                                },
-                              );
-                            }),
+                          padding:
+                              const EdgeInsets.only(left: 8, top: 8, bottom: 8),
+                          child: Text(
+                            "OUR ${widget.categoryName.toUpperCase()} COLLECTION",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
                           ),
                         ),
+                        Expanded(
+                          child: ListView(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          mainAxisExtent:
+                                              MediaQuery.sizeOf(context)
+                                                      .height /
+                                                  3),
+                                  itemCount: getPaginatedProducts().length,
+                                  itemBuilder: ((context, index) {
+                                    Product cartItem =
+                                        getPaginatedProducts()[index];
+                                    return ProductTile(
+                                      product: cartItem,
+                                      ontap: () {
+                                        setState(() {
+                                          controller.cartProducts.add(cartItem);
+                                          controller.totalPrice();
+                                          length =
+                                              controller.cartProducts.length;
+                                          totalprice = controller.totalCost;
+                                        });
+                                        var snackBar = SnackBar(
+                                          content: Text(
+                                              'Added to Cart! Click 🛒 to update your order'),
+                                          duration: Duration(seconds: 1),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      },
+                                    );
+                                  }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.arrow_back_ios),
+                              onPressed: () {
+                                if (currentPage > 1) {
+                                  setState(() {
+                                    currentPage--;
+                                  });
+                                }
+                                print(currentPage);
+                              },
+                            ),
+                            SizedBox(width: 16),
+                            IconButton(
+                              icon: Icon(Icons.arrow_forward_ios),
+                              onPressed: () {
+                                if (currentPage <
+                                    (controller.categoryProducts.length /
+                                            itemsPerPage)
+                                        .ceil()) {
+                                  setState(() {
+                                    currentPage++;
+                                  });
+                                  print(currentPage);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        totalprice != 0
+                            ? Container(
+                                color: Colors.orange,
+                                width: double.infinity,
+                                height: 60,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Total',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10),
+                                              ),
+                                              Text(
+                                                'Rs. ${controller.totalCost}',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(
+                                                  context, CartPage.routeName);
+                                            },
+                                            child: Text("View Cart",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold)))
+                                      ]),
+                                ),
+                              )
+                            : SizedBox()
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios),
-                        onPressed: () {
-                          if (currentPage > 1) {
-                            setState(() {
-                              currentPage--;
-                            });
-                          }
-                          print(currentPage);
-                        },
-                      ),
-                      SizedBox(width: 16),
-                      IconButton(
-                        icon: Icon(Icons.arrow_forward_ios),
-                        onPressed: () {
-                          if (currentPage <
-                              (controller.categoryProducts.length /
-                                      itemsPerPage)
-                                  .ceil()) {
-                            setState(() {
-                              currentPage++;
-                            });
-                            print(currentPage);
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  totalprice != 0
-                      ? Container(
-                          color: Colors.orange,
-                          width: double.infinity,
-                          height: 60,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Total',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10),
-                                        ),
-                                        Text(
-                                          'Rs. ${controller.totalCost}',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                            context, CartPage.routeName);
-                                      },
-                                      child: Text("View Cart",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold)))
-                                ]),
-                          ),
-                        )
-                      : SizedBox()
-                ],
-              ),
-            ),
           );
         });
   }
