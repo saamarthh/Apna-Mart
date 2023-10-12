@@ -50,6 +50,28 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+  Future<void> setProductList(QuerySnapshot<Map<String, dynamic>> snapshot) async {
+    try {
+      final List<Product> loadedProduct = [];
+      snapshot.docs.forEach((doc) {
+        loadedProduct.add(
+          Product(
+              id: doc['id'],
+              name: doc['name'],
+              quantity: doc['quantity'],
+              our_price: doc['our_price'],
+              image: doc['image'],
+              category: doc['category'],
+              mrp_price: doc['mrp_price']),
+        );
+      });
+      _products = loadedProduct;
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
   void setDeliveryCost() {
     if (totalCost < 700) {
       deliveryCost = 40;

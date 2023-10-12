@@ -126,9 +126,9 @@ class _DashboardState extends State<Dashboard> {
     if (controller.category.isEmpty) {
       controller.fetchCategory();
     }
-    if (controller.products.isEmpty) {
-      controller.fetchProduct();
-    }
+    // if (controller.products.isEmpty) {
+    //   controller.fetchProduct();
+    // }
     controller.totalPrice();
 
     int length = 0;
@@ -329,46 +329,73 @@ class _DashboardState extends State<Dashboard> {
                                     fontSize: 20),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(3.0),
-                              child: GridView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        mainAxisExtent:
-                                            MediaQuery.sizeOf(context).height /
-                                                3),
-                                itemCount: getPaginatedProducts().length,
-                                itemBuilder: ((context, index) {
-                                  Product cartItem =
-                                      getPaginatedProducts()[index];
-                                  // bool addDisabled = false;
-                                  return ProductTile(
-                                    product: cartItem,
-                                    // addDisabled: addDisabled,
-                                    ontap: () {
-                                      setState(() {
-                                        controller.cartProducts.add(cartItem);
-                                        controller.totalPrice();
-                                        controller.setDeliveryCost();
-                                        length = controller.cartProducts.length;
-                                        totalprice = controller.totalCost;
-                                      });
+                            FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                future: FirebaseFirestore.instance
+                                    .collection('products')
+                                    .where('quantity', isEqualTo: 1)
+                                    .get(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  }
 
-                                      var snackBar = SnackBar(
-                                        content: Text(
-                                            'Added to Cart! Click 🛒 to update your order'),
-                                        duration: Duration(seconds: 1),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                    },
+                                  controller.setProductList(snapshot.data!);
+                                  totalPages = getTotalPages(
+                                      controller.products, itemsPerPage);
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(3.0),
+                                        child: GridView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 2,
+                                                  mainAxisExtent:
+                                                      MediaQuery.sizeOf(context)
+                                                              .height /
+                                                          3),
+                                          itemCount:
+                                              getPaginatedProducts().length,
+                                          itemBuilder: ((context, index) {
+                                            Product cartItem =
+                                                getPaginatedProducts()[index];
+                                            // bool addDisabled = false;
+                                            return ProductTile(
+                                              product: cartItem,
+                                              // addDisabled: addDisabled,
+                                              ontap: () {
+                                                setState(() {
+                                                  controller.cartProducts
+                                                      .add(cartItem);
+                                                  controller.totalPrice();
+                                                  controller.setDeliveryCost();
+                                                  length = controller
+                                                      .cartProducts.length;
+                                                  totalprice =
+                                                      controller.totalCost;
+                                                });
+
+                                                var snackBar = SnackBar(
+                                                  content: Text(
+                                                      'Added to Cart! Click 🛒 to update your order'),
+                                                  duration:
+                                                      Duration(seconds: 1),
+                                                );
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(snackBar);
+                                              },
+                                            );
+                                          }),
+                                        ),
+                                      ),
+                                    ],
                                   );
                                 }),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -396,7 +423,7 @@ class _DashboardState extends State<Dashboard> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
-                              "$currentPage / $totalPages",
+                              "Page $currentPage",
                               style: TextStyle(
                                 fontSize: 16, // Adjust the font size
                                 color: Colors.white, // Customize the text color
