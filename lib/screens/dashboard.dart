@@ -161,7 +161,6 @@ class _DashboardState extends State<Dashboard> {
       return totalPages == 0 ? 1 : totalPages;
     }
 
-    int totalPages = getTotalPages(controller.products, itemsPerPage);
 
     return distanceInKm > 10
         ? DeliveryUnavailableScreen()
@@ -342,7 +341,7 @@ class _DashboardState extends State<Dashboard> {
                                   }
 
                                   controller.setProductList(snapshot.data!);
-                                  totalPages = getTotalPages(
+                                  int totalPages = getTotalPages(
                                       controller.products, itemsPerPage);
                                   return Column(
                                     children: [
@@ -393,13 +392,7 @@ class _DashboardState extends State<Dashboard> {
                                           }),
                                         ),
                                       ),
-                                    ],
-                                  );
-                                }),
-                          ],
-                        ),
-                      ),
-                      Row(
+                                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
@@ -423,7 +416,7 @@ class _DashboardState extends State<Dashboard> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: Text(
-                              "Page $currentPage",
+                              "$currentPage/$totalPages",
                               style: TextStyle(
                                 fontSize: 16, // Adjust the font size
                                 color: Colors.white, // Customize the text color
@@ -444,6 +437,13 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ],
                       ),
+                                    ],
+                                  );
+                                }),
+                          ],
+                        ),
+                      ),
+                      
                       if (totalprice != 0)
                         Container(
                           color: Colors.orange,
