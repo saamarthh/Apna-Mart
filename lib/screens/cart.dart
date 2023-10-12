@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:apna_mart/main.dart';
 import 'package:apna_mart/controllers/user_provider.dart';
 import 'package:apna_mart/utility/loading.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -40,6 +41,7 @@ class _CartPageState extends State<CartPage> {
     final controller = Provider.of<ProductProvider>(context);
     var userController = Provider.of<UserProvider>(context);
     controller.totalPrice();
+    controller.setDeliveryCost();
     double totalCost = controller.totalCost;
     double deliveryCost = controller.deliveryCost;
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -137,6 +139,20 @@ class _CartPageState extends State<CartPage> {
                             color: Colors.grey,
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 0, vertical: 8),
+                          child: Text(
+                            'Add products worth Rs. 700 or more to cart to get free delivery',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                backgroundColor: Colors.orange[100]
+                                
+                                ),
+                          ),
+                        ),
                         Container(
                           width: double.infinity,
                           height: 60,
@@ -182,7 +198,7 @@ class _CartPageState extends State<CartPage> {
                                           color: Colors.black),
                                     ),
                                     Text(
-                                      "Rs.${totalCost + deliveryCost}",
+                                      "Rs.${totalCost}",
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                           fontSize: 22,
@@ -243,6 +259,7 @@ class CartTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(product.image);
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: Container(
@@ -254,9 +271,16 @@ class CartTile extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Image.network(
-                product.image,
-                width: 80,
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CachedNetworkImage(
+                  imageUrl: product.image,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
               ),
             ),
             Expanded(

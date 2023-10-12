@@ -15,10 +15,13 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   List<Product> products = [];
   List<Product> _searchResults = [];
+  int currentPage = 1; // Current page number
+  int itemsPerPage = 20;
 
   @override
   Widget build(BuildContext context) {
-    ProductProvider controller =Provider.of<ProductProvider>(context, listen: false);
+    ProductProvider controller =
+        Provider.of<ProductProvider>(context, listen: false);
 
     if (controller.products.isEmpty) {
       controller.fetchProduct();
@@ -33,6 +36,33 @@ class _SearchPageState extends State<SearchPage> {
       length = controller.cartProducts.length;
       totalprice = controller.totalCost;
     });
+
+    List<Product> getPaginatedProducts() {
+      // Calculate the starting and ending indices for the current page
+      int startIndex = (currentPage - 1) * itemsPerPage;
+      int endIndex = currentPage * itemsPerPage;
+
+      // Return a sublist of products for the current page
+      return _searchResults.sublist(
+        startIndex,
+        endIndex.clamp(
+            0,
+            _searchResults
+                .length), // Ensure endIndex doesn't exceed the list length
+      );
+    }
+
+    int getTotalPages(List<Product> products, int itemsPerPage) {
+      int totalPages = (products.length / itemsPerPage).ceil();
+      return totalPages == 0 ? 1 : totalPages;
+    }
+
+    int totalPages = getTotalPages(_searchResults, itemsPerPage);
+
+    if (currentPage > totalPages) {
+      totalPages = 1;
+      currentPage = 1;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -68,37 +98,90 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
           ),
-          Expanded(
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: MediaQuery.sizeOf(context).height / 3),
-              itemCount: _searchResults.length,
-              itemBuilder: (context, index) {
-                final product = _searchResults[index];
-                return ProductTile(
-                  product: product,
-                  // addDisabled: addDisabled,
-                  ontap: () {
+          currentPage > totalPages
+              ? Text('No items')
+              : Expanded(
+                  child: ListView(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisExtent:
+                                      MediaQuery.sizeOf(context).height / 3),
+                          itemCount: getPaginatedProducts().length,
+                          itemBuilder: ((context, index) {
+                            Product cartItem = getPaginatedProducts()[index];
+                            return ProductTile(
+                              product: cartItem,
+                              ontap: () {
+                                setState(() {
+                                  controller.cartProducts.add(cartItem);
+                                  controller.totalPrice();
+                                  length = controller.cartProducts.length;
+                                  totalprice = controller.totalCost;
+                                });
+                                var snackBar = SnackBar(
+                                  content: Text(
+                                      'Added to Cart! Click 🛒 to update your order'),
+                                  duration: Duration(seconds: 1),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              },
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios_rounded),
+                onPressed: () {
+                  if (currentPage > 1) {
                     setState(() {
-                      controller.cartProducts.add(product);
-                      controller.totalPrice();
-                      length = controller.cartProducts.length;
-                      totalprice = controller.totalCost;
+                      currentPage--;
                     });
-
-                    var snackBar = SnackBar(
-                      content:
-                          Text('Added to Cart! Click 🛒 to update your order'),
-                      duration: Duration(seconds: 1),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
-                );
-              },
-            ),
+                  }
+                },
+                iconSize: 24, // Adjust the icon size
+              ),
+              SizedBox(width: 16),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.orange[400], // Customize the background color
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  "$currentPage / $totalPages",
+                  style: TextStyle(
+                    fontSize: 16, // Adjust the font size
+                    color: Colors.white, // Customize the text color
+                  ),
+                ),
+              ),
+              SizedBox(width: 16),
+              IconButton(
+                icon: Icon(Icons.arrow_forward_ios_rounded),
+                onPressed: () {
+                  if (currentPage < totalPages) {
+                    setState(() {
+                      currentPage++;
+                    });
+                  }
+                },
+                iconSize: 24, // Adjust the icon size
+              ),
+            ],
           ),
           if (totalprice != 0)
             Container(

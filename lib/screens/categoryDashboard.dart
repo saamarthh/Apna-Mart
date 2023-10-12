@@ -1,5 +1,6 @@
 import 'package:apna_mart/main.dart';
 import 'package:apna_mart/screens/cart.dart';
+import 'package:apna_mart/screens/searchPage.dart';
 import 'package:apna_mart/utility/loading.dart';
 import 'package:apna_mart/utility/menuDrawer.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,13 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
       );
     }
 
+    int getTotalPages(List<Product> products, int itemsPerPage) {
+      int totalPages = (products.length / itemsPerPage).ceil();
+      return totalPages == 0 ? 1 : totalPages;
+    }
+
+    int totalPages = getTotalPages(controller.categoryProducts, itemsPerPage);
+
     print(controller.categoryProducts.length);
 
     final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -102,7 +110,9 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, SearchPage.routeName);
+                  },
                   icon: Icon(Icons.search_rounded),
                   color: Colors.white,
                 ),
@@ -208,30 +218,45 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.arrow_back_ios),
+                              icon: Icon(Icons.arrow_back_ios_rounded),
                               onPressed: () {
                                 if (currentPage > 1) {
                                   setState(() {
                                     currentPage--;
                                   });
                                 }
-                                print(currentPage);
                               },
+                              iconSize: 24, // Adjust the icon size
+                            ),
+                            SizedBox(width: 16),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.orange[
+                                    400], // Customize the background color
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              child: Text(
+                                "$currentPage / $totalPages",
+                                style: TextStyle(
+                                  fontSize: 16, // Adjust the font size
+                                  color:
+                                      Colors.white, // Customize the text color
+                                ),
+                              ),
                             ),
                             SizedBox(width: 16),
                             IconButton(
-                              icon: Icon(Icons.arrow_forward_ios),
+                              icon: Icon(Icons.arrow_forward_ios_rounded),
                               onPressed: () {
-                                if (currentPage <
-                                    (controller.categoryProducts.length /
-                                            itemsPerPage)
-                                        .ceil()) {
+                                if (currentPage < totalPages) {
                                   setState(() {
                                     currentPage++;
                                   });
-                                  print(currentPage);
                                 }
                               },
+                              iconSize: 24, // Adjust the icon size
                             ),
                           ],
                         ),

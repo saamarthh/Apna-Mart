@@ -53,8 +53,10 @@ class ProductProvider with ChangeNotifier {
   void setDeliveryCost() {
     if (totalCost < 700) {
       deliveryCost = 40;
+      totalCost += deliveryCost;
     } else {
       deliveryCost = 0;
+      totalCost += deliveryCost;
     }
     notifyListeners();
   }

@@ -156,6 +156,13 @@ class _DashboardState extends State<Dashboard> {
       );
     }
 
+    int getTotalPages(List<Product> products, int itemsPerPage) {
+      int totalPages = (products.length / itemsPerPage).ceil();
+      return totalPages == 0 ? 1 : totalPages;
+    }
+
+    int totalPages = getTotalPages(controller.products, itemsPerPage);
+
     return distanceInKm > 10
         ? DeliveryUnavailableScreen()
         : FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -345,6 +352,7 @@ class _DashboardState extends State<Dashboard> {
                                       setState(() {
                                         controller.cartProducts.add(cartItem);
                                         controller.totalPrice();
+                                        controller.setDeliveryCost();
                                         length = controller.cartProducts.length;
                                         totalprice = controller.totalCost;
                                       });
@@ -368,29 +376,44 @@ class _DashboardState extends State<Dashboard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.arrow_back_ios),
+                            icon: Icon(Icons.arrow_back_ios_rounded),
                             onPressed: () {
                               if (currentPage > 1) {
                                 setState(() {
                                   currentPage--;
                                 });
                               }
-                              print(currentPage);
                             },
+                            iconSize: 24, // Adjust the icon size
+                          ),
+                          SizedBox(width: 16),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.orange[
+                                  400], // Customize the background color
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Text(
+                              "$currentPage / $totalPages",
+                              style: TextStyle(
+                                fontSize: 16, // Adjust the font size
+                                color: Colors.white, // Customize the text color
+                              ),
+                            ),
                           ),
                           SizedBox(width: 16),
                           IconButton(
-                            icon: Icon(Icons.arrow_forward_ios),
+                            icon: Icon(Icons.arrow_forward_ios_rounded),
                             onPressed: () {
-                              if (currentPage <
-                                  (controller.products.length / itemsPerPage)
-                                      .ceil()) {
+                              if (currentPage < totalPages) {
                                 setState(() {
                                   currentPage++;
                                 });
-                                print(currentPage);
                               }
                             },
+                            iconSize: 24, // Adjust the icon size
                           ),
                         ],
                       ),
