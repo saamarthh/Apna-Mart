@@ -79,8 +79,6 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
       return totalPages == 0 ? 1 : totalPages;
     }
 
-    int totalPages = getTotalPages(controller.categoryProducts, itemsPerPage);
-
     print(controller.categoryProducts.length);
 
     final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -96,6 +94,8 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
           }
 
           controller.fetchCategoryProduct(snapshot.data!);
+
+          int totalPages = getTotalPages(controller.categoryProducts, itemsPerPage);
 
           return Scaffold(
             drawer: const MenuDrawer(),
@@ -211,10 +211,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                                   }),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        Row(
+                              Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
@@ -260,6 +257,10 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                             ),
                           ],
                         ),
+                            ],
+                          ),
+                        ),
+                        
                         totalprice != 0
                             ? Container(
                                 color: Colors.orange,
