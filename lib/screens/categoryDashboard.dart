@@ -346,8 +346,8 @@ class ProductTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                height: 60,
-                width: 60,
+                height: 90,
+                width: 80,
                 // child: Image.network(
                 //   product.image,
                 //   fit: BoxFit.fill,
